@@ -2,32 +2,25 @@
 title: "Analysis_LoL"
 author: "Marshall Gallt"
 date: "2/28/2022"
-output: pdf_document
+output: github_document
 ---
 
+In this project I wish to explore possible indicators of a winning strategy. This will be observed as a whole and as groups by leagues, teams, and players. I then wish to use these indicators to compare teams and hypothesis the best team.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-Lol_match_data_2022 <- read.csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
+Lol_match_data_2022 <- read_csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
 
 ```
+In this project I will be working with the `2022_LoL_esports_match_data_from_OraclesElixir_20220228` data provided by RIOT. The first thing needed to do is understand the way our data is constructed. I will do this by displaying a tibble of the data and a simple summary.
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
+```{r Lol}
+Lol_match_data_2022
 summary(Lol_match_data_2022)
 ```
+We are obviously working with a very large data frame. So we will begin by 
 
-## Including Plots
+```{r find team}
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
