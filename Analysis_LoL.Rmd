@@ -5,7 +5,34 @@ date: "2/28/2022"
 output: github_document
 ---
 
+# Introduction
+
 In this project I wish to explore possible indicators of a winning strategy. This will be observed as a whole and as groups by leagues, teams, and players. I then wish to use these indicators to compare teams and hypothesis the best team.
+
+# Research Questions
+
+
+# Data
+
+
+# Exploratory Data Analysis
+
+
+
+
+# Data Cleaning
+
+
+# Data Analysis
+
+# Hypotheses
+
+# Modeling
+
+# Conclusion
+
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -19,8 +46,49 @@ In this project I will be working with the `2022_LoL_esports_match_data_from_Ora
 Lol_match_data_2022
 summary(Lol_match_data_2022)
 ```
-We are obviously working with a very large data frame. So we will begin by 
+WThe very first thing i wish do to is compare some of the variables to `outcome` 
 
-```{r find team}
+```{r outcome}
+Lol_match_data_2022 %>%
+  group_by(result) %>%
+  filter(position == "sup") %>%
+  summarise(total = n(),
+            avgkills = mean(kills),
+            avgdeaths = mean(deaths),
+            avgassists = mean(assists))
+
+Lol_match_data_2022 %>%
+  ggplot(aes(kills, deaths, color = result, shape = position)) +
+    geom_jitter(alpha = 0.05)
+
+Lol_match_data_2022 %>%
+  group_by(result) %>%
+  filter(position == "jng") %>%
+  summarise(total = n(),
+            avgkills = mean(kills),
+            avgdeaths = mean(deaths),
+            avgassists = mean(assists))
+Lol_match_data_2022 %>%
+  group_by(result) %>%
+  filter(position == "top") %>%
+  summarise(total = n(),
+            avgkills = mean(kills),
+            avgdeaths = mean(deaths),
+            avgassists = mean(assists))
+Lol_match_data_2022 %>%
+  group_by(result) %>%
+  filter(position == "mid") %>%
+  summarise(total = n(),
+            avgkills = mean(kills),
+            avgdeaths = mean(deaths),
+            avgassists = mean(assists))
+Lol_match_data_2022 %>%
+  group_by(result) %>%
+  filter(position == "bot") %>%
+  summarise(total = n(),
+            avgkills = mean(kills),
+            avgdeaths = mean(deaths),
+            avgassists = mean(assists))
+            
 
 ```
