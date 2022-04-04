@@ -3,39 +3,237 @@ Analysis_LoL
 Marshall Gallt
 2/28/2022
 
-In this project I wish to explore possible indicators of a winning
-strategy. This will be observed as a whole and as groups by leagues,
-teams, and players. I then wish to use these indicators to compare teams
-and hypothesis the best team.
+# Introduction
 
-In this project I will be working with the
-`2022_LoL_esports_match_data_from_OraclesElixir_20220228` data provided
-by RIOT. The first thing needed to do is understand the way our data is
-constructed. I will do this by displaying a tibble of the data and a
-simple summary.
+League of Legends is a popular PC game. Teams all around the world
+compete with the hopes of making it to Worlds. Riot has released data
+for each player of each professional game of the 2022 season thus far.
+In this project I will perform logistic regression in R on
+`2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv`.
+
+# Research Questions
+
+In this logistic regression a number of questions could be posed.
+Examples include, what indicates a winning score for each role, when is
+gold income the most important, what objectives are the most decisive,
+how do the teams and leagues differentiate in strategy.
+
+# Data
+
+The data we have available is:
+
+| Variable                 | Type        | Description |
+|--------------------------|-------------|-------------|
+| gameid                   | Character   |             |
+| datacompleteness         | Categorical |             |
+| url                      | Character   |             |
+| league                   | Categorical |             |
+| year                     | Date        |             |
+| split                    | Categorical |             |
+| playoffs                 | Binary      |             |
+| date                     | Date        |             |
+| game                     | Categorical |             |
+| patch                    | Categorical |             |
+| participantid            | Numeric     |             |
+| side                     | Categorical |             |
+| position                 | Categorical |             |
+| playername               | Character   |             |
+| playerid                 | Character   |             |
+| teamname                 | Character   |             |
+| teamid                   | Character   |             |
+| champion                 | Categorical |             |
+| ban1                     | Categorical |             |
+| ban2                     | Categorical |             |
+| ban3                     | Categorical |             |
+| ban4                     | Categorical |             |
+| ban5                     | Categorical |             |
+| gamelength               | Numeric     |             |
+| result                   | Binary      |             |
+| kills                    | Numeric     |             |
+| deaths                   | Numeric     |             |
+| assists                  | Numeric     |             |
+| teamkills                | Numeric     |             |
+| teamdeaths               | Numeric     |             |
+| doublekills              | Numeric     |             |
+| triplekills              | Numeric     |             |
+| quadrakills              | Numeric     |             |
+| pentakills               | Numeric     |             |
+| firstblood               | Numeric     |             |
+| firstbloodkill           | Numeric     |             |
+| firstbloodassist         | Numeric     |             |
+| firstbloodvictim         | Numeric     |             |
+| team kpm                 | Numeric     |             |
+| ckpm                     | Numeric     |             |
+| firstdragon              | Binary      |             |
+| dragons                  | Numeric     |             |
+| opp_dragons              | Numeric     |             |
+| elementaldrakes          | Numeric     |             |
+| opp_elementaldrakes      | Numeric     |             |
+| infernals                | Numeric     |             |
+| mountains                | Numeric     |             |
+| clouds                   | Numeric     |             |
+| oceans                   | Numeric     |             |
+| chemtechs                | Numeric     |             |
+| hextechs                 | Numeric     |             |
+| dragons (type unkown)    | Numeric     |             |
+| elders                   | Numeric     |             |
+| opp_elders               | Numeric     |             |
+| firstherald              | Binary      |             |
+| heralds                  | Numeric     |             |
+| opp_heralds              | Numeric     |             |
+| firstbaron               | Binary      |             |
+| barons                   | Numeric     |             |
+| opp_barons               | Numeric     |             |
+| firsttower               | Binary      |             |
+| towers                   | Numeric     |             |
+| opp_towers               | Numeric     |             |
+| firstmidtower            | Binary      |             |
+| firsttothreetowers       | Binary      |             |
+| turretplates             | Numeric     |             |
+| opp_turretplates         | Numeric     |             |
+| inhibitors               | Numeric     |             |
+| opp_inhibitors           | Numeric     |             |
+| damagetochampions        | Numeric     |             |
+| dpm                      | Numeric     |             |
+| damageshare              | Numeric     |             |
+| damagetakenperminute     | Numeric     |             |
+| damagemitigatedperminute | Numeric     |             |
+| wardsplaced              | Numeric     |             |
+| wpm                      | Numeric     |             |
+| wardskilled              | Numeric     |             |
+| wcpm                     | Numeric     |             |
+| controlwardsbought       | Numeric     |             |
+| visionscore              | Numeric     |             |
+| vspm                     | Numeric     |             |
+| totalgold                | Numeric     |             |
+| earnedgold               | Numeric     |             |
+| earned gpm               | Numeric     |             |
+| earnedgoldshare          | Numeric     |             |
+| goldspend                | Numeric     |             |
+| gspd                     |             |             |
+| total cs                 | Numeric     |             |
+| minionkills              | Numeric     |             |
+| monsterkills             | Numeric     |             |
+| monsterkillsownjungle    | Numeric     |             |
+| monsterkillsenemyjungle  | Numeric     |             |
+| cspm                     | Numeric     |             |
+| goldat10                 | Numeric     |             |
+| xpat10                   | Numeric     |             |
+| csat10                   | Numeric     |             |
+| opp_goldat10             | Numeric     |             |
+| opp_xpat10               | Numeric     |             |
+| opp_csat10               | Numeric     |             |
+| golddiffat10             | Numeric     |             |
+| xpdiffat10               | Numeric     |             |
+| csdiffat10               | Numeric     |             |
+| killsat10                | Numeric     |             |
+| deathsat10               | Numeric     |             |
+| opp_killsat10            | Numeric     |             |
+| opp_assistsat10          | Numeric     |             |
+| opp_deathsat10           | Numeric     |             |
+| goldat15                 | Numeric     |             |
+| xpat15                   | Numeric     |             |
+| csat15                   | Numeric     |             |
+| opp_goldat15             | Numeric     |             |
+| opp_xpat15               | Numeric     |             |
+| opp_csat15               | Numeric     |             |
+| golddiffat15             | Numeric     |             |
+| xpdiffat15               | Numeric     |             |
+| csdiffat15               | Numeric     |             |
+| killsat15                | Numeric     |             |
+| assistsat15              | Numeric     |             |
+| deathsat15               | Numeric     |             |
+| opp_killsat15            | Numeric     |             |
+| opp_assistsat15          | Numeric     |             |
+| opp_deathsat15           | Numeric     |             |
+
+# Exploratory Data Analysis
 
 ``` r
-Lol_match_data_2022
+names(Lol_match_data_2022)
 ```
 
-    ## # A tibble: 30,528 x 123
-    ##    gameid datacompleteness url   league  year split playoffs date               
-    ##    <chr>  <chr>            <chr> <chr>  <dbl> <chr>    <dbl> <dttm>             
-    ##  1 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  2 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  3 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  4 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  5 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  6 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  7 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  8 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  9 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## 10 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## # ... with 30,518 more rows, and 115 more variables: game <dbl>, patch <dbl>,
-    ## #   participantid <dbl>, side <chr>, position <chr>, playername <chr>,
-    ## #   playerid <chr>, teamname <chr>, teamid <chr>, champion <chr>, ban1 <chr>,
-    ## #   ban2 <chr>, ban3 <chr>, ban4 <chr>, ban5 <chr>, gamelength <dbl>,
-    ## #   result <dbl>, kills <dbl>, deaths <dbl>, assists <dbl>, teamkills <dbl>,
+    ##   [1] "gameid"                   "datacompleteness"        
+    ##   [3] "url"                      "league"                  
+    ##   [5] "year"                     "split"                   
+    ##   [7] "playoffs"                 "date"                    
+    ##   [9] "game"                     "patch"                   
+    ##  [11] "participantid"            "side"                    
+    ##  [13] "position"                 "playername"              
+    ##  [15] "playerid"                 "teamname"                
+    ##  [17] "teamid"                   "champion"                
+    ##  [19] "ban1"                     "ban2"                    
+    ##  [21] "ban3"                     "ban4"                    
+    ##  [23] "ban5"                     "gamelength"              
+    ##  [25] "result"                   "kills"                   
+    ##  [27] "deaths"                   "assists"                 
+    ##  [29] "teamkills"                "teamdeaths"              
+    ##  [31] "doublekills"              "triplekills"             
+    ##  [33] "quadrakills"              "pentakills"              
+    ##  [35] "firstblood"               "firstbloodkill"          
+    ##  [37] "firstbloodassist"         "firstbloodvictim"        
+    ##  [39] "team kpm"                 "ckpm"                    
+    ##  [41] "firstdragon"              "dragons"                 
+    ##  [43] "opp_dragons"              "elementaldrakes"         
+    ##  [45] "opp_elementaldrakes"      "infernals"               
+    ##  [47] "mountains"                "clouds"                  
+    ##  [49] "oceans"                   "chemtechs"               
+    ##  [51] "hextechs"                 "dragons (type unknown)"  
+    ##  [53] "elders"                   "opp_elders"              
+    ##  [55] "firstherald"              "heralds"                 
+    ##  [57] "opp_heralds"              "firstbaron"              
+    ##  [59] "barons"                   "opp_barons"              
+    ##  [61] "firsttower"               "towers"                  
+    ##  [63] "opp_towers"               "firstmidtower"           
+    ##  [65] "firsttothreetowers"       "turretplates"            
+    ##  [67] "opp_turretplates"         "inhibitors"              
+    ##  [69] "opp_inhibitors"           "damagetochampions"       
+    ##  [71] "dpm"                      "damageshare"             
+    ##  [73] "damagetakenperminute"     "damagemitigatedperminute"
+    ##  [75] "wardsplaced"              "wpm"                     
+    ##  [77] "wardskilled"              "wcpm"                    
+    ##  [79] "controlwardsbought"       "visionscore"             
+    ##  [81] "vspm"                     "totalgold"               
+    ##  [83] "earnedgold"               "earned gpm"              
+    ##  [85] "earnedgoldshare"          "goldspent"               
+    ##  [87] "gspd"                     "total cs"                
+    ##  [89] "minionkills"              "monsterkills"            
+    ##  [91] "monsterkillsownjungle"    "monsterkillsenemyjungle" 
+    ##  [93] "cspm"                     "goldat10"                
+    ##  [95] "xpat10"                   "csat10"                  
+    ##  [97] "opp_goldat10"             "opp_xpat10"              
+    ##  [99] "opp_csat10"               "golddiffat10"            
+    ## [101] "xpdiffat10"               "csdiffat10"              
+    ## [103] "killsat10"                "assistsat10"             
+    ## [105] "deathsat10"               "opp_killsat10"           
+    ## [107] "opp_assistsat10"          "opp_deathsat10"          
+    ## [109] "goldat15"                 "xpat15"                  
+    ## [111] "csat15"                   "opp_goldat15"            
+    ## [113] "opp_xpat15"               "opp_csat15"              
+    ## [115] "golddiffat15"             "xpdiffat15"              
+    ## [117] "csdiffat15"               "killsat15"               
+    ## [119] "assistsat15"              "deathsat15"              
+    ## [121] "opp_killsat15"            "opp_assistsat15"         
+    ## [123] "opp_deathsat15"
+
+``` r
+head(Lol_match_data_2022)
+```
+
+    ## # A tibble: 6 x 123
+    ##   gameid  datacompleteness url   league  year split playoffs date               
+    ##   <chr>   <chr>            <chr> <chr>  <dbl> <chr>    <dbl> <dttm>             
+    ## 1 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 2 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 3 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 4 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 5 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 6 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## # ... with 115 more variables: game <dbl>, patch <dbl>, participantid <dbl>,
+    ## #   side <chr>, position <chr>, playername <chr>, playerid <chr>,
+    ## #   teamname <chr>, teamid <chr>, champion <chr>, ban1 <chr>, ban2 <chr>,
+    ## #   ban3 <chr>, ban4 <chr>, ban5 <chr>, gamelength <dbl>, result <dbl>,
+    ## #   kills <dbl>, deaths <dbl>, assists <dbl>, teamkills <dbl>,
     ## #   teamdeaths <dbl>, doublekills <dbl>, triplekills <dbl>, quadrakills <dbl>,
     ## #   pentakills <dbl>, firstblood <dbl>, firstbloodkill <dbl>, ...
 
@@ -292,5 +490,12 @@ summary(Lol_match_data_2022)
     ##  Max.   :21.000   Max.   :47.000   Max.   :21.000  
     ##  NA's   :3768     NA's   :3768     NA's   :3768
 
-We are obviously working with a very large data frame. So we will begin
-by
+# Data Cleaning
+
+# Data Analysis
+
+# Hypotheses
+
+# Modeling
+
+# Conclusion
