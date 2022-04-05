@@ -103,14 +103,12 @@ summary(LCS_matches)
 ### 
 
 ```{r summary-tables-1, warning=FALSE}
-LCS_mtx <- as.matrix(LCS_matches)
 
 LCS_matches %>%
   data.matrix() %>%
   cor()%>%
   corrplot(is.corr = FALSE, order = 'FPC')
 
-  
 ```
 
 # Data Cleaning

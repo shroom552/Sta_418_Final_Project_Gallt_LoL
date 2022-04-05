@@ -157,8 +157,6 @@ summary(LCS_matches)
 ### 
 
 ``` r
-LCS_mtx <- as.matrix(LCS_matches)
-
 LCS_matches %>%
   data.matrix() %>%
   cor()%>%
