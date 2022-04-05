@@ -8,8 +8,10 @@ Marshall Gallt
 League of Legends is a popular PC game. Teams all around the world
 compete with the hopes of making it to Worlds. Riot has released data
 for each player of each professional game of the 2022 season thus far.
-In this project I will perform logistic regression in R on
-`2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv`.
+In this project I will perform logistic regression in R on the
+`2022 Match Data` found on Oracle Elixir’s [downloads
+page](https://oracleselixir.com/tools/downloads).
+`2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv`
 
 # Research Questions
 
@@ -20,475 +22,167 @@ how do the teams and leagues differentiate in strategy.
 
 # Data
 
-The data we have available is:
-
-| Variable                 | Type        | Description |
-|--------------------------|-------------|-------------|
-| gameid                   | Character   |             |
-| datacompleteness         | Categorical |             |
-| url                      | Character   |             |
-| league                   | Categorical |             |
-| year                     | Date        |             |
-| split                    | Categorical |             |
-| playoffs                 | Binary      |             |
-| date                     | Date        |             |
-| game                     | Categorical |             |
-| patch                    | Categorical |             |
-| participantid            | Numeric     |             |
-| side                     | Categorical |             |
-| position                 | Categorical |             |
-| playername               | Character   |             |
-| playerid                 | Character   |             |
-| teamname                 | Character   |             |
-| teamid                   | Character   |             |
-| champion                 | Categorical |             |
-| ban1                     | Categorical |             |
-| ban2                     | Categorical |             |
-| ban3                     | Categorical |             |
-| ban4                     | Categorical |             |
-| ban5                     | Categorical |             |
-| gamelength               | Numeric     |             |
-| result                   | Binary      |             |
-| kills                    | Numeric     |             |
-| deaths                   | Numeric     |             |
-| assists                  | Numeric     |             |
-| teamkills                | Numeric     |             |
-| teamdeaths               | Numeric     |             |
-| doublekills              | Numeric     |             |
-| triplekills              | Numeric     |             |
-| quadrakills              | Numeric     |             |
-| pentakills               | Numeric     |             |
-| firstblood               | Numeric     |             |
-| firstbloodkill           | Numeric     |             |
-| firstbloodassist         | Numeric     |             |
-| firstbloodvictim         | Numeric     |             |
-| team kpm                 | Numeric     |             |
-| ckpm                     | Numeric     |             |
-| firstdragon              | Binary      |             |
-| dragons                  | Numeric     |             |
-| opp_dragons              | Numeric     |             |
-| elementaldrakes          | Numeric     |             |
-| opp_elementaldrakes      | Numeric     |             |
-| infernals                | Numeric     |             |
-| mountains                | Numeric     |             |
-| clouds                   | Numeric     |             |
-| oceans                   | Numeric     |             |
-| chemtechs                | Numeric     |             |
-| hextechs                 | Numeric     |             |
-| dragons (type unkown)    | Numeric     |             |
-| elders                   | Numeric     |             |
-| opp_elders               | Numeric     |             |
-| firstherald              | Binary      |             |
-| heralds                  | Numeric     |             |
-| opp_heralds              | Numeric     |             |
-| firstbaron               | Binary      |             |
-| barons                   | Numeric     |             |
-| opp_barons               | Numeric     |             |
-| firsttower               | Binary      |             |
-| towers                   | Numeric     |             |
-| opp_towers               | Numeric     |             |
-| firstmidtower            | Binary      |             |
-| firsttothreetowers       | Binary      |             |
-| turretplates             | Numeric     |             |
-| opp_turretplates         | Numeric     |             |
-| inhibitors               | Numeric     |             |
-| opp_inhibitors           | Numeric     |             |
-| damagetochampions        | Numeric     |             |
-| dpm                      | Numeric     |             |
-| damageshare              | Numeric     |             |
-| damagetakenperminute     | Numeric     |             |
-| damagemitigatedperminute | Numeric     |             |
-| wardsplaced              | Numeric     |             |
-| wpm                      | Numeric     |             |
-| wardskilled              | Numeric     |             |
-| wcpm                     | Numeric     |             |
-| controlwardsbought       | Numeric     |             |
-| visionscore              | Numeric     |             |
-| vspm                     | Numeric     |             |
-| totalgold                | Numeric     |             |
-| earnedgold               | Numeric     |             |
-| earned gpm               | Numeric     |             |
-| earnedgoldshare          | Numeric     |             |
-| goldspend                | Numeric     |             |
-| gspd                     |             |             |
-| total cs                 | Numeric     |             |
-| minionkills              | Numeric     |             |
-| monsterkills             | Numeric     |             |
-| monsterkillsownjungle    | Numeric     |             |
-| monsterkillsenemyjungle  | Numeric     |             |
-| cspm                     | Numeric     |             |
-| goldat10                 | Numeric     |             |
-| xpat10                   | Numeric     |             |
-| csat10                   | Numeric     |             |
-| opp_goldat10             | Numeric     |             |
-| opp_xpat10               | Numeric     |             |
-| opp_csat10               | Numeric     |             |
-| golddiffat10             | Numeric     |             |
-| xpdiffat10               | Numeric     |             |
-| csdiffat10               | Numeric     |             |
-| killsat10                | Numeric     |             |
-| deathsat10               | Numeric     |             |
-| opp_killsat10            | Numeric     |             |
-| opp_assistsat10          | Numeric     |             |
-| opp_deathsat10           | Numeric     |             |
-| goldat15                 | Numeric     |             |
-| xpat15                   | Numeric     |             |
-| csat15                   | Numeric     |             |
-| opp_goldat15             | Numeric     |             |
-| opp_xpat15               | Numeric     |             |
-| opp_csat15               | Numeric     |             |
-| golddiffat15             | Numeric     |             |
-| xpdiffat15               | Numeric     |             |
-| csdiffat15               | Numeric     |             |
-| killsat15                | Numeric     |             |
-| assistsat15              | Numeric     |             |
-| deathsat15               | Numeric     |             |
-| opp_killsat15            | Numeric     |             |
-| opp_assistsat15          | Numeric     |             |
-| opp_deathsat15           | Numeric     |             |
-
-# Exploratory Data Analysis
+The data we have available is quite large and detailed. So I will be
+reducing the data to key variables and LCS matches.
 
 ``` r
-names(Lol_match_data_2022)
+Lol_match_data_2022
 ```
 
-    ##   [1] "gameid"                   "datacompleteness"        
-    ##   [3] "url"                      "league"                  
-    ##   [5] "year"                     "split"                   
-    ##   [7] "playoffs"                 "date"                    
-    ##   [9] "game"                     "patch"                   
-    ##  [11] "participantid"            "side"                    
-    ##  [13] "position"                 "playername"              
-    ##  [15] "playerid"                 "teamname"                
-    ##  [17] "teamid"                   "champion"                
-    ##  [19] "ban1"                     "ban2"                    
-    ##  [21] "ban3"                     "ban4"                    
-    ##  [23] "ban5"                     "gamelength"              
-    ##  [25] "result"                   "kills"                   
-    ##  [27] "deaths"                   "assists"                 
-    ##  [29] "teamkills"                "teamdeaths"              
-    ##  [31] "doublekills"              "triplekills"             
-    ##  [33] "quadrakills"              "pentakills"              
-    ##  [35] "firstblood"               "firstbloodkill"          
-    ##  [37] "firstbloodassist"         "firstbloodvictim"        
-    ##  [39] "team kpm"                 "ckpm"                    
-    ##  [41] "firstdragon"              "dragons"                 
-    ##  [43] "opp_dragons"              "elementaldrakes"         
-    ##  [45] "opp_elementaldrakes"      "infernals"               
-    ##  [47] "mountains"                "clouds"                  
-    ##  [49] "oceans"                   "chemtechs"               
-    ##  [51] "hextechs"                 "dragons (type unknown)"  
-    ##  [53] "elders"                   "opp_elders"              
-    ##  [55] "firstherald"              "heralds"                 
-    ##  [57] "opp_heralds"              "firstbaron"              
-    ##  [59] "barons"                   "opp_barons"              
-    ##  [61] "firsttower"               "towers"                  
-    ##  [63] "opp_towers"               "firstmidtower"           
-    ##  [65] "firsttothreetowers"       "turretplates"            
-    ##  [67] "opp_turretplates"         "inhibitors"              
-    ##  [69] "opp_inhibitors"           "damagetochampions"       
-    ##  [71] "dpm"                      "damageshare"             
-    ##  [73] "damagetakenperminute"     "damagemitigatedperminute"
-    ##  [75] "wardsplaced"              "wpm"                     
-    ##  [77] "wardskilled"              "wcpm"                    
-    ##  [79] "controlwardsbought"       "visionscore"             
-    ##  [81] "vspm"                     "totalgold"               
-    ##  [83] "earnedgold"               "earned gpm"              
-    ##  [85] "earnedgoldshare"          "goldspent"               
-    ##  [87] "gspd"                     "total cs"                
-    ##  [89] "minionkills"              "monsterkills"            
-    ##  [91] "monsterkillsownjungle"    "monsterkillsenemyjungle" 
-    ##  [93] "cspm"                     "goldat10"                
-    ##  [95] "xpat10"                   "csat10"                  
-    ##  [97] "opp_goldat10"             "opp_xpat10"              
-    ##  [99] "opp_csat10"               "golddiffat10"            
-    ## [101] "xpdiffat10"               "csdiffat10"              
-    ## [103] "killsat10"                "assistsat10"             
-    ## [105] "deathsat10"               "opp_killsat10"           
-    ## [107] "opp_assistsat10"          "opp_deathsat10"          
-    ## [109] "goldat15"                 "xpat15"                  
-    ## [111] "csat15"                   "opp_goldat15"            
-    ## [113] "opp_xpat15"               "opp_csat15"              
-    ## [115] "golddiffat15"             "xpdiffat15"              
-    ## [117] "csdiffat15"               "killsat15"               
-    ## [119] "assistsat15"              "deathsat15"              
-    ## [121] "opp_killsat15"            "opp_assistsat15"         
-    ## [123] "opp_deathsat15"
-
-``` r
-head(Lol_match_data_2022)
-```
-
-    ## # A tibble: 6 x 123
-    ##   gameid  datacompleteness url   league  year split playoffs date               
-    ##   <chr>   <chr>            <chr> <chr>  <dbl> <chr>    <dbl> <dttm>             
-    ## 1 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## 2 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## 3 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## 4 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## 5 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## 6 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## # ... with 115 more variables: game <dbl>, patch <dbl>, participantid <dbl>,
-    ## #   side <chr>, position <chr>, playername <chr>, playerid <chr>,
-    ## #   teamname <chr>, teamid <chr>, champion <chr>, ban1 <chr>, ban2 <chr>,
-    ## #   ban3 <chr>, ban4 <chr>, ban5 <chr>, gamelength <dbl>, result <dbl>,
-    ## #   kills <dbl>, deaths <dbl>, assists <dbl>, teamkills <dbl>,
+    ## # A tibble: 30,528 x 123
+    ##    gameid datacompleteness url   league  year split playoffs date               
+    ##    <chr>  <chr>            <chr> <chr>  <dbl> <chr>    <dbl> <dttm>             
+    ##  1 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ##  2 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ##  3 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ##  4 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ##  5 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ##  6 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ##  7 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ##  8 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ##  9 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 10 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## # ... with 30,518 more rows, and 115 more variables: game <dbl>, patch <dbl>,
+    ## #   participantid <dbl>, side <chr>, position <chr>, playername <chr>,
+    ## #   playerid <chr>, teamname <chr>, teamid <chr>, champion <chr>, ban1 <chr>,
+    ## #   ban2 <chr>, ban3 <chr>, ban4 <chr>, ban5 <chr>, gamelength <dbl>,
+    ## #   result <dbl>, kills <dbl>, deaths <dbl>, assists <dbl>, teamkills <dbl>,
     ## #   teamdeaths <dbl>, doublekills <dbl>, triplekills <dbl>, quadrakills <dbl>,
     ## #   pentakills <dbl>, firstblood <dbl>, firstbloodkill <dbl>, ...
 
 ``` r
-summary(Lol_match_data_2022)
+LCS_matches <- Lol_match_data_2022 %>%
+  filter(league == "LCS",
+         position == "team") %>%
+  subset(select = c('gameid',
+                    'side',
+                    'gamelength',
+                    'result',
+                    'firstblood',
+                    'team kpm',
+                    'firstdragon',
+                    'dragons',
+                    'firstbaron',
+                    'barons',
+                    'firsttower',
+                    'towers',
+                    'firstmidtower',
+                    'firsttothreetowers',
+                    'inhibitors',
+                    'vspm',
+                    'earned gpm',
+                    'cspm'))
+
+LCS_matches
 ```
 
-    ##     gameid          datacompleteness       url               league         
-    ##  Length:30528       Length:30528       Length:30528       Length:30528      
-    ##  Class :character   Class :character   Class :character   Class :character  
-    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##       year         split              playoffs      
-    ##  Min.   :2022   Length:30528       Min.   :0.00000  
-    ##  1st Qu.:2022   Class :character   1st Qu.:0.00000  
-    ##  Median :2022   Mode  :character   Median :0.00000  
-    ##  Mean   :2022                      Mean   :0.01533  
-    ##  3rd Qu.:2022                      3rd Qu.:0.00000  
-    ##  Max.   :2022                      Max.   :1.00000  
-    ##                                                     
-    ##       date                          game           patch       participantid   
-    ##  Min.   :2022-01-10 07:44:08   Min.   :1.000   Min.   :12.01   Min.   :  1.00  
-    ##  1st Qu.:2022-01-25 19:32:30   1st Qu.:1.000   1st Qu.:12.01   1st Qu.:  3.75  
-    ##  Median :2022-02-09 02:00:55   Median :1.000   Median :12.02   Median :  6.50  
-    ##  Mean   :2022-02-06 08:41:45   Mean   :1.184   Mean   :12.02   Mean   : 29.58  
-    ##  3rd Qu.:2022-02-18 04:48:32   3rd Qu.:1.000   3rd Qu.:12.03   3rd Qu.:  9.25  
-    ##  Max.   :2022-02-28 08:17:23   Max.   :4.000   Max.   :12.04   Max.   :200.00  
-    ##                                                NA's   :24                      
-    ##      side             position          playername          playerid        
-    ##  Length:30528       Length:30528       Length:30528       Length:30528      
-    ##  Class :character   Class :character   Class :character   Class :character  
-    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##    teamname            teamid            champion             ban1          
-    ##  Length:30528       Length:30528       Length:30528       Length:30528      
-    ##  Class :character   Class :character   Class :character   Class :character  
-    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##      ban2               ban3               ban4               ban5          
-    ##  Length:30528       Length:30528       Length:30528       Length:30528      
-    ##  Class :character   Class :character   Class :character   Class :character  
-    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##    gamelength       result        kills            deaths         assists      
-    ##  Min.   : 938   Min.   :0.0   Min.   : 0.000   Min.   : 0.00   Min.   :  0.00  
-    ##  1st Qu.:1681   1st Qu.:0.0   1st Qu.: 1.000   1st Qu.: 2.00   1st Qu.:  3.00  
-    ##  Median :1883   Median :0.5   Median : 3.000   Median : 3.00   Median :  7.00  
-    ##  Mean   :1920   Mean   :0.5   Mean   : 4.661   Mean   : 4.67   Mean   : 10.34  
-    ##  3rd Qu.:2119   3rd Qu.:1.0   3rd Qu.: 6.000   3rd Qu.: 5.00   3rd Qu.: 11.00  
-    ##  Max.   :3577   Max.   :1.0   Max.   :46.000   Max.   :46.00   Max.   :113.00  
-    ##                                                                                
-    ##    teamkills       teamdeaths     doublekills    triplekills     quadrakills   
-    ##  Min.   : 0.00   Min.   : 0.00   Min.   :0.00   Min.   :0.000   Min.   :0.000  
-    ##  1st Qu.: 8.00   1st Qu.: 8.00   1st Qu.:0.00   1st Qu.:0.000   1st Qu.:0.000  
-    ##  Median :14.00   Median :14.00   Median :0.00   Median :0.000   Median :0.000  
-    ##  Mean   :13.98   Mean   :14.01   Mean   :0.54   Mean   :0.095   Mean   :0.015  
-    ##  3rd Qu.:19.00   3rd Qu.:19.00   3rd Qu.:1.00   3rd Qu.:0.000   3rd Qu.:0.000  
-    ##  Max.   :46.00   Max.   :46.00   Max.   :9.00   Max.   :4.000   Max.   :2.000  
-    ##                                  NA's   :3768   NA's   :3768    NA's   :3768   
-    ##    pentakills      firstblood     firstbloodkill firstbloodassist
-    ##  Min.   :0.000   Min.   :0.0000   Min.   :0.0    Min.   :0.000   
-    ##  1st Qu.:0.000   1st Qu.:0.0000   1st Qu.:0.0    1st Qu.:0.000   
-    ##  Median :0.000   Median :0.0000   Median :0.0    Median :0.000   
-    ##  Mean   :0.003   Mean   :0.2897   Mean   :0.1    Mean   :0.142   
-    ##  3rd Qu.:0.000   3rd Qu.:1.0000   3rd Qu.:0.0    3rd Qu.:0.000   
-    ##  Max.   :1.000   Max.   :1.0000   Max.   :1.0    Max.   :1.000   
-    ##  NA's   :3768    NA's   :3140     NA's   :5088   NA's   :8228    
-    ##  firstbloodvictim    team kpm           ckpm        firstdragon    
-    ##  Min.   :0.0      Min.   :0.0000   Min.   :0.2022   Mode :logical  
-    ##  1st Qu.:0.0      1st Qu.:0.2607   1st Qu.:0.6962   FALSE:2230     
-    ##  Median :0.0      Median :0.4147   Median :0.8540   TRUE :2230     
-    ##  Mean   :0.1      Mean   :0.4428   Mean   :0.8856   NA's :26068    
-    ##  3rd Qu.:0.0      3rd Qu.:0.5949   3rd Qu.:1.0445                  
-    ##  Max.   :1.0      Max.   :1.6875   Max.   :2.1083                  
-    ##  NA's   :8228                                                      
-    ##     dragons       opp_dragons    elementaldrakes opp_elementaldrakes
-    ##  Min.   :0.000   Min.   :0.000   Mode :logical   Mode :logical      
-    ##  1st Qu.:1.000   1st Qu.:1.000   FALSE:584       FALSE:584          
-    ##  Median :2.000   Median :2.000   TRUE :803       TRUE :803          
-    ##  Mean   :2.296   Mean   :2.296   NA's :29141     NA's :29141        
-    ##  3rd Qu.:3.000   3rd Qu.:3.000                                      
-    ##  Max.   :6.000   Max.   :6.000                                      
-    ##  NA's   :25440   NA's   :25440                                      
-    ##  infernals       mountains         clouds          oceans       
-    ##  Mode :logical   Mode :logical   Mode :logical   Mode :logical  
-    ##  FALSE:3004      FALSE:3045      FALSE:3009      FALSE:3008     
-    ##  TRUE :1093      TRUE :1078      TRUE :1077      TRUE :1074     
-    ##  NA's :26431     NA's :26405     NA's :26442     NA's :26446    
-    ##                                                                 
-    ##                                                                 
-    ##                                                                 
-    ##  chemtechs        hextechs       dragons (type unknown)   elders       
-    ##  Mode :logical   Mode :logical   Min.   :0.000          Mode :logical  
-    ##  FALSE:4051      FALSE:3068      1st Qu.:1.000          FALSE:4187     
-    ##  TRUE :315       TRUE :1048      Median :2.000          TRUE :257      
-    ##  NA's :26162     NA's :26412     Mean   :2.244          NA's :26084    
-    ##                                  3rd Qu.:3.000                         
-    ##                                  Max.   :5.000                         
-    ##                                  NA's   :29716                         
-    ##  opp_elders      firstherald      heralds        opp_heralds    
-    ##  Mode :logical   Mode :logical   Mode :logical   Mode :logical  
-    ##  FALSE:4187      FALSE:2231      FALSE:1426      FALSE:1426     
-    ##  TRUE :257       TRUE :2229      TRUE :1679      TRUE :1679     
-    ##  NA's :26084     NA's :26068     NA's :27423     NA's :27423    
-    ##                                                                 
-    ##                                                                 
-    ##                                                                 
-    ##  firstbaron          barons        opp_barons    firsttower     
-    ##  Mode :logical   Min.   :0.000   Min.   :0.000   Mode :logical  
-    ##  FALSE:2347      1st Qu.:0.000   1st Qu.:0.000   FALSE:2230     
-    ##  TRUE :2113      Median :0.000   Median :0.000   TRUE :2230     
-    ##  NA's :26068     Mean   :0.239   Mean   :0.239   NA's :26068    
-    ##                  3rd Qu.:0.000   3rd Qu.:0.000                  
-    ##                  Max.   :4.000   Max.   :4.000                  
-    ##                  NA's   :4070    NA's   :4070                   
-    ##      towers         opp_towers     firstmidtower   firsttothreetowers
-    ##  Min.   : 0.000   Min.   : 0.000   Mode :logical   Mode :logical     
-    ##  1st Qu.: 3.000   1st Qu.: 3.000   FALSE:2230      FALSE:2230        
-    ##  Median : 7.000   Median : 7.000   TRUE :2230      TRUE :2230        
-    ##  Mean   : 6.144   Mean   : 6.144   NA's :26068     NA's :26068       
-    ##  3rd Qu.: 9.000   3rd Qu.: 9.000                                     
-    ##  Max.   :11.000   Max.   :11.000                                     
-    ##  NA's   :25440    NA's   :25440                                      
-    ##  turretplates    opp_turretplates   inhibitors    opp_inhibitors 
-    ##  Mode :logical   Mode :logical    Min.   :0.000   Min.   :0.000  
-    ##  FALSE:164       FALSE:164        1st Qu.:0.000   1st Qu.:0.000  
-    ##  TRUE :362       TRUE :362        Median :0.000   Median :0.000  
-    ##  NA's :30002     NA's :30002      Mean   :0.338   Mean   :0.338  
-    ##                                   3rd Qu.:0.000   3rd Qu.:0.000  
-    ##                                   Max.   :8.000   Max.   :8.000  
-    ##                                   NA's   :4060    NA's   :4060   
-    ##  damagetochampions      dpm           damageshare    damagetakenperminute
-    ##  Min.   :   629    Min.   :  18.09   Min.   :0.014   Min.   :  23.85     
-    ##  1st Qu.:  7438    1st Qu.: 243.97   1st Qu.:0.121   1st Qu.: 386.10     
-    ##  Median : 13058    Median : 419.96   Median :0.198   Median : 573.07     
-    ##  Mean   : 20904    Mean   : 646.45   Mean   :0.200   Mean   : 928.99     
-    ##  3rd Qu.: 22872    3rd Qu.: 686.33   3rd Qu.:0.269   3rd Qu.: 922.98     
-    ##  Max.   :197845    Max.   :4100.26   Max.   :0.700   Max.   :4789.45     
-    ##                                      NA's   :5088                        
-    ##  damagemitigatedperminute  wardsplaced          wpm          wardskilled    
-    ##  Min.   :  15.43          Min.   :  0.00   Min.   :0.0000   Min.   :  0.00  
-    ##  1st Qu.: 268.53          1st Qu.: 11.00   1st Qu.:0.3535   1st Qu.:  5.00  
-    ##  Median : 499.01          Median : 15.00   Median :0.4737   Median :  9.00  
-    ##  Mean   : 792.81          Mean   : 33.38   Mean   :1.0309   Mean   : 14.72  
-    ##  3rd Qu.: 872.33          3rd Qu.: 46.00   3rd Qu.:1.4651   3rd Qu.: 16.00  
-    ##  Max.   :7240.09          Max.   :267.00   Max.   :6.3723   Max.   :125.00  
-    ##  NA's   :3768                                                               
-    ##       wcpm        controlwardsbought  visionscore         vspm        
-    ##  Min.   :0.0000   Min.   :  0.00     Min.   :  4.0   Min.   : 0.1614  
-    ##  1st Qu.:0.1748   1st Qu.:  5.00     1st Qu.: 31.0   1st Qu.: 1.0012  
-    ##  Median :0.2867   Median :  8.00     Median : 45.0   Median : 1.3602  
-    ##  Mean   :0.4508   Mean   : 13.55     Mean   : 77.2   Mean   : 2.3781  
-    ##  3rd Qu.:0.4749   3rd Qu.: 16.00     3rd Qu.: 82.0   3rd Qu.: 2.5349  
-    ##  Max.   :3.0620   Max.   :110.00     Max.   :599.0   Max.   :11.4872  
-    ##                                                                       
-    ##    totalgold        earnedgold      earned gpm      earnedgoldshare
-    ##  Min.   :  3455   Min.   :  925   Min.   :  37.73   Min.   :0.049  
-    ##  1st Qu.:  9386   1st Qu.: 5431   1st Qu.: 181.29   1st Qu.:0.158  
-    ##  Median : 12180   Median : 8000   Median : 253.71   Median :0.211  
-    ##  Mean   : 19101   Mean   :12113   Mean   : 378.77   Mean   :0.200  
-    ##  3rd Qu.: 15912   3rd Qu.:11262   3rd Qu.: 337.63   3rd Qu.:0.250  
-    ##  Max.   :109439   Max.   :71576   Max.   :1714.41   Max.   :0.421  
-    ##                                                     NA's   :5088   
-    ##    goldspent           gspd           total cs      minionkills    
-    ##  Min.   :  2850   Min.   :-0.533   Min.   :  1.0   Min.   :   1.0  
-    ##  1st Qu.:  8775   1st Qu.:-0.105   1st Qu.:146.8   1st Qu.:  38.0  
-    ##  Median : 11275   Median : 0.000   Median :219.0   Median : 223.0  
-    ##  Mean   : 17683   Mean   : 0.000   Mean   :203.4   Mean   : 261.8  
-    ##  3rd Qu.: 14784   3rd Qu.: 0.105   3rd Qu.:277.0   3rd Qu.: 294.0  
-    ##  Max.   :101080   Max.   : 0.533   Max.   :605.0   Max.   :1646.0  
-    ##                   NA's   :25440    NA's   :5088    NA's   :628     
-    ##   monsterkills    monsterkillsownjungle monsterkillsenemyjungle
-    ##  Min.   :  0.00   Min.   :  0.00        Min.   : 0.000         
-    ##  1st Qu.:  4.00   1st Qu.:  4.00        1st Qu.: 0.000         
-    ##  Median : 23.00   Median : 19.00        Median : 1.000         
-    ##  Mean   : 68.09   Mean   : 47.15        Mean   : 5.938         
-    ##  3rd Qu.:138.00   3rd Qu.: 92.00        3rd Qu.: 8.000         
-    ##  Max.   :434.00   Max.   :250.00        Max.   :86.000         
-    ##                   NA's   :26748         NA's   :26748          
-    ##       cspm            goldat10         xpat10          csat10     
-    ##  Min.   : 0.0259   Min.   : 1698   Min.   :  838   Min.   :  0.0  
-    ##  1st Qu.: 5.3574   1st Qu.: 2985   1st Qu.: 3091   1st Qu.: 61.0  
-    ##  Median : 7.8996   Median : 3314   Median : 3940   Median : 78.0  
-    ##  Mean   :10.2198   Mean   : 5224   Mean   : 6077   Mean   :106.2  
-    ##  3rd Qu.: 9.5768   3rd Qu.: 3769   3rd Qu.: 4831   3rd Qu.: 91.0  
-    ##  Max.   :46.1296   Max.   :20743   Max.   :21344   Max.   :390.0  
-    ##  NA's   :628       NA's   :3768    NA's   :3768    NA's   :3768   
-    ##   opp_goldat10     opp_xpat10      opp_csat10     golddiffat10  
-    ##  Min.   : 1698   Min.   :  838   Min.   :  0.0   Min.   :-7268  
-    ##  1st Qu.: 2985   1st Qu.: 3091   1st Qu.: 61.0   1st Qu.: -343  
-    ##  Median : 3314   Median : 3940   Median : 78.0   Median :    0  
-    ##  Mean   : 5224   Mean   : 6077   Mean   :106.2   Mean   :    0  
-    ##  3rd Qu.: 3769   3rd Qu.: 4831   3rd Qu.: 91.0   3rd Qu.:  343  
-    ##  Max.   :20743   Max.   :21344   Max.   :390.0   Max.   : 7268  
-    ##  NA's   :3768    NA's   :3768    NA's   :3768    NA's   :3768   
-    ##    xpdiffat10      csdiffat10        killsat10       assistsat10    
-    ##  Min.   :-4502   Min.   :-110.00   Min.   : 0.000   Min.   : 0.000  
-    ##  1st Qu.: -311   1st Qu.:  -8.25   1st Qu.: 0.000   1st Qu.: 0.000  
-    ##  Median :    0   Median :   0.00   Median : 0.000   Median : 0.000  
-    ##  Mean   :    0   Mean   :   0.00   Mean   : 0.698   Mean   : 1.078  
-    ##  3rd Qu.:  311   3rd Qu.:   8.25   3rd Qu.: 1.000   3rd Qu.: 1.000  
-    ##  Max.   : 4502   Max.   : 110.00   Max.   :15.000   Max.   :35.000  
-    ##  NA's   :3768    NA's   :3768      NA's   :3768     NA's   :3768    
-    ##    deathsat10   opp_killsat10    opp_assistsat10  opp_deathsat10
-    ##  Min.   : 0.0   Min.   : 0.000   Min.   : 0.000   Min.   : 0.0  
-    ##  1st Qu.: 0.0   1st Qu.: 0.000   1st Qu.: 0.000   1st Qu.: 0.0  
-    ##  Median : 0.0   Median : 0.000   Median : 0.000   Median : 0.0  
-    ##  Mean   : 0.7   Mean   : 0.698   Mean   : 1.078   Mean   : 0.7  
-    ##  3rd Qu.: 1.0   3rd Qu.: 1.000   3rd Qu.: 1.000   3rd Qu.: 1.0  
-    ##  Max.   :15.0   Max.   :15.000   Max.   :35.000   Max.   :15.0  
-    ##  NA's   :3768   NA's   :3768     NA's   :3768     NA's   :3768  
-    ##     goldat15         xpat15          csat15       opp_goldat15  
-    ##  Min.   : 2433   Min.   : 1729   Min.   :  0.0   Min.   : 2433  
-    ##  1st Qu.: 4633   1st Qu.: 5166   1st Qu.: 93.0   1st Qu.: 4633  
-    ##  Median : 5251   Median : 6393   Median :125.0   Median : 5251  
-    ##  Mean   : 8261   Mean   : 9797   Mean   :169.2   Mean   : 8261  
-    ##  3rd Qu.: 6117   3rd Qu.: 7716   3rd Qu.:146.0   3rd Qu.: 6117  
-    ##  Max.   :33969   Max.   :33982   Max.   :618.0   Max.   :33969  
-    ##  NA's   :3768    NA's   :3768    NA's   :3768    NA's   :3768   
-    ##    opp_xpat15      opp_csat15     golddiffat15      xpdiffat15    
-    ##  Min.   : 1729   Min.   :  0.0   Min.   :-13670   Min.   :-10019  
-    ##  1st Qu.: 5166   1st Qu.: 93.0   1st Qu.:  -665   1st Qu.:  -528  
-    ##  Median : 6393   Median :125.0   Median :     0   Median :     0  
-    ##  Mean   : 9797   Mean   :169.2   Mean   :     0   Mean   :     0  
-    ##  3rd Qu.: 7716   3rd Qu.:146.0   3rd Qu.:   665   3rd Qu.:   528  
-    ##  Max.   :33982   Max.   :618.0   Max.   : 13670   Max.   : 10019  
-    ##  NA's   :3768    NA's   :3768    NA's   :3768     NA's   :3768    
-    ##    csdiffat15     killsat15       assistsat15       deathsat15    
-    ##  Min.   :-179   Min.   : 0.000   Min.   : 0.000   Min.   : 0.000  
-    ##  1st Qu.: -13   1st Qu.: 0.000   1st Qu.: 0.000   1st Qu.: 0.000  
-    ##  Median :   0   Median : 1.000   Median : 1.000   Median : 1.000  
-    ##  Mean   :   0   Mean   : 1.296   Mean   : 2.114   Mean   : 1.299  
-    ##  3rd Qu.:  13   3rd Qu.: 2.000   3rd Qu.: 3.000   3rd Qu.: 2.000  
-    ##  Max.   : 179   Max.   :21.000   Max.   :47.000   Max.   :21.000  
-    ##  NA's   :3768   NA's   :3768     NA's   :3768     NA's   :3768    
-    ##  opp_killsat15    opp_assistsat15  opp_deathsat15  
-    ##  Min.   : 0.000   Min.   : 0.000   Min.   : 0.000  
-    ##  1st Qu.: 0.000   1st Qu.: 0.000   1st Qu.: 0.000  
-    ##  Median : 1.000   Median : 1.000   Median : 1.000  
-    ##  Mean   : 1.296   Mean   : 2.114   Mean   : 1.299  
-    ##  3rd Qu.: 2.000   3rd Qu.: 3.000   3rd Qu.: 2.000  
-    ##  Max.   :21.000   Max.   :47.000   Max.   :21.000  
-    ##  NA's   :3768     NA's   :3768     NA's   :3768
+    ## # A tibble: 168 x 18
+    ##    gameid      side  gamelength result firstblood `team kpm` firstdragon dragons
+    ##    <chr>       <chr>      <dbl>  <dbl>      <dbl>      <dbl> <lgl>         <dbl>
+    ##  1 ESPORTSTMN~ Blue        1595      0          1     0.0376 FALSE             0
+    ##  2 ESPORTSTMN~ Red         1595      1          0     0.564  TRUE              4
+    ##  3 ESPORTSTMN~ Blue        2079      1          1     0.548  TRUE              4
+    ##  4 ESPORTSTMN~ Red         2079      0          0     0.260  FALSE             0
+    ##  5 ESPORTSTMN~ Blue        3007      0          0     0.299  TRUE              3
+    ##  6 ESPORTSTMN~ Red         3007      1          1     0.419  FALSE             4
+    ##  7 ESPORTSTMN~ Blue        1976      1          0     0.668  FALSE             2
+    ##  8 ESPORTSTMN~ Red         1976      0          1     0.334  TRUE              2
+    ##  9 ESPORTSTMN~ Blue        2149      1          0     0.475  TRUE              5
+    ## 10 ESPORTSTMN~ Red         2149      0          1     0.335  FALSE             0
+    ## # ... with 158 more rows, and 10 more variables: firstbaron <lgl>,
+    ## #   barons <dbl>, firsttower <lgl>, towers <dbl>, firstmidtower <lgl>,
+    ## #   firsttothreetowers <lgl>, inhibitors <dbl>, vspm <dbl>, earned gpm <dbl>,
+    ## #   cspm <dbl>
+
+| Variable           | Type        | Description |
+|--------------------|-------------|-------------|
+| gameid             | Character   |             |
+| side               | Categorical |             |
+| gamelength         | Numeric     |             |
+| result             | Binary      |             |
+| team kpm           | Numeric     |             |
+| firstdragon        | Binary      |             |
+| firstbaron         | Binary      |             |
+| barons             | Numeric     |             |
+| firsttower         | Binary      |             |
+| towers             | Numeric     |             |
+| firstmidtower      | Binary      |             |
+| firsttothreetowers | Binary      |             |
+| inhibitors         | Numeric     |             |
+| vspm               | Numeric     |             |
+| earned gpm         | Numeric     |             |
+| cspm               | Numeric     |             |
+
+# Exploratory Data Analysis
+
+First, we conduct an exploratory data analysis.
+
+## Numerical Summaries
+
+``` r
+summary(LCS_matches)
+```
+
+    ##     gameid              side             gamelength       result   
+    ##  Length:168         Length:168         Min.   :1443   Min.   :0.0  
+    ##  Class :character   Class :character   1st Qu.:1762   1st Qu.:0.0  
+    ##  Mode  :character   Mode  :character   Median :1956   Median :0.5  
+    ##                                        Mean   :1998   Mean   :0.5  
+    ##                                        3rd Qu.:2212   3rd Qu.:1.0  
+    ##                                        Max.   :3007   Max.   :1.0  
+    ##    firstblood     team kpm      firstdragon        dragons      firstbaron     
+    ##  Min.   :0.0   Min.   :0.0376   Mode :logical   Min.   :0.000   Mode :logical  
+    ##  1st Qu.:0.0   1st Qu.:0.2094   FALSE:84        1st Qu.:1.000   FALSE:85       
+    ##  Median :0.5   Median :0.3488   TRUE :84        Median :2.000   TRUE :83       
+    ##  Mean   :0.5   Mean   :0.3642                   Mean   :2.321                  
+    ##  3rd Qu.:1.0   3rd Qu.:0.4976                   3rd Qu.:4.000                  
+    ##  Max.   :1.0   Max.   :0.9979                   Max.   :5.000                  
+    ##      barons       firsttower          towers       firstmidtower  
+    ##  Min.   :0.0000   Mode :logical   Min.   : 0.000   Mode :logical  
+    ##  1st Qu.:0.0000   FALSE:84        1st Qu.: 2.000   FALSE:84       
+    ##  Median :1.0000   TRUE :84        Median : 7.000   TRUE :84       
+    ##  Mean   :0.6726                   Mean   : 6.238                  
+    ##  3rd Qu.:1.0000                   3rd Qu.:10.000                  
+    ##  Max.   :3.0000                   Max.   :11.000                  
+    ##  firsttothreetowers   inhibitors        vspm          earned gpm    
+    ##  Mode :logical      Min.   :0.00   Min.   : 4.283   Min.   : 775.1  
+    ##  FALSE:84           1st Qu.:0.00   1st Qu.: 6.851   1st Qu.: 977.6  
+    ##  TRUE :84           Median :1.00   Median : 7.643   Median :1122.5  
+    ##                     Mean   :1.06   Mean   : 7.571   Mean   :1137.9  
+    ##                     3rd Qu.:2.00   3rd Qu.: 8.262   3rd Qu.:1289.1  
+    ##                     Max.   :6.00   Max.   :10.363   Max.   :1467.6  
+    ##       cspm      
+    ##  Min.   :25.32  
+    ##  1st Qu.:31.72  
+    ##  Median :33.60  
+    ##  Mean   :34.00  
+    ##  3rd Qu.:35.56  
+    ##  Max.   :46.13
+
+From the a quick summary of our variables two things immediately stick
+out, there are thousands of observations with missing values, and the
+numeric variables have extreme values significantly deviant from the
+innerquartile range.
+
+This extreme variance is because our data observes the individual
+players of each team as well as the team’s combined values,
+r=ecognizable by `position == "team"`.
+
+## Graphical Summaries
+
+### 
+
+``` r
+LCS_matches %>%
+  group_by(result)%>%
+  summarise()
+```
+
+    ## # A tibble: 2 x 1
+    ##   result
+    ##    <dbl>
+    ## 1      0
+    ## 2      1
 
 # Data Cleaning
 

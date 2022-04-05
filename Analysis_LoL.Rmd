@@ -5,6 +5,13 @@ date: "2/28/2022"
 output: github_document
 ---
 
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+Lol_match_data_2022 <- read_csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
+```
 
 
 # Introduction
@@ -12,8 +19,8 @@ output: github_document
 League of Legends is a popular PC game. Teams all around the world compete with
 the hopes of making it to Worlds. Riot has released data for each player of each
 professional game of the 2022 season thus far. In this project I will perform 
-logistic regression in R on 
-`2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv`.
+logistic regression in R on the `2022 Match Data` found on Oracle Elixir's [downloads page](https://oracleselixir.com/tools/downloads).
+`2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv`
 
 
 # Research Questions
@@ -24,170 +31,108 @@ most important, what objectives are the most decisive, how do the teams and
 leagues differentiate in strategy.
 
 # Data
-The data we have available is:
+The data we have available is quite large and detailed. So I will be reducing 
+the data to key variables and LCS matches.
+
+```{r reduce}
+Lol_match_data_2022
+
+LCS_matches <- Lol_match_data_2022 %>%
+  filter(league == "LCS",
+         position == "team") %>%
+  subset(select = c('gameid',
+                    'side',
+                    'gamelength',
+                    'result',
+                    'firstblood',
+                    'team kpm',
+                    'firstdragon',
+                    'dragons',
+                    'firstbaron',
+                    'barons',
+                    'firsttower',
+                    'towers',
+                    'firstmidtower',
+                    'firsttothreetowers',
+                    'inhibitors',
+                    'vspm',
+                    'earned gpm',
+                    'cspm'))
+
+LCS_matches
+
+
+```
 
 Variable | Type | Description
 ---------|------|------------
 gameid | Character | 
-datacompleteness | Categorical | 
-url | Character | 
-league | Categorical | 
-year | Date | 
-split | Categorical |
-playoffs | Binary |
-date | Date |
-game | Categorical |
-patch | Categorical |
-participantid | Numeric |
 side | Categorical |
-position | Categorical |
-playername | Character | 
-playerid | Character |
-teamname | Character |
-teamid | Character |
-champion | Categorical |
-ban1 | Categorical |
-ban2 | Categorical |
-ban3 | Categorical |
-ban4 | Categorical |
-ban5 | Categorical |
 gamelength | Numeric |
 result | Binary |
-kills | Numeric |
-deaths | Numeric |
-assists | Numeric |
-teamkills | Numeric |
-teamdeaths | Numeric |
-doublekills | Numeric |
-triplekills | Numeric |
-quadrakills | Numeric |
-pentakills | Numeric |
-firstblood | Numeric |
-firstbloodkill | Numeric |
-firstbloodassist | Numeric |
-firstbloodvictim | Numeric |
 team kpm | Numeric |
-ckpm | Numeric |
 firstdragon | Binary |
-dragons | Numeric |
-opp_dragons | Numeric |
-elementaldrakes | Numeric |
-opp_elementaldrakes | Numeric |
-infernals | Numeric |
-mountains | Numeric |
-clouds | Numeric |
-oceans | Numeric |
-chemtechs | Numeric |
-hextechs | Numeric |
-dragons (type unkown) | Numeric |
-elders | Numeric |
-opp_elders | Numeric |
-firstherald | Binary |
-heralds | Numeric |
-opp_heralds | Numeric |
 firstbaron | Binary |
 barons | Numeric |
-opp_barons | Numeric |
 firsttower | Binary |
 towers | Numeric |
-opp_towers | Numeric |
 firstmidtower | Binary |
 firsttothreetowers | Binary |
-turretplates | Numeric |
-opp_turretplates | Numeric |
 inhibitors | Numeric |
-opp_inhibitors | Numeric |
-damagetochampions | Numeric |
-dpm | Numeric |
-damageshare | Numeric |
-damagetakenperminute | Numeric |
-damagemitigatedperminute | Numeric |
-wardsplaced | Numeric |
-wpm | Numeric |
-wardskilled | Numeric |
-wcpm | Numeric | 
-controlwardsbought | Numeric |
-visionscore | Numeric |
 vspm | Numeric |
-totalgold | Numeric |
-earnedgold | Numeric |
 earned gpm | Numeric |
-earnedgoldshare | Numeric |
-goldspend | Numeric |
-gspd |
-total cs | Numeric |
-minionkills | Numeric |
-monsterkills | Numeric |
-monsterkillsownjungle | Numeric |
-monsterkillsenemyjungle |  Numeric |
 cspm | Numeric |
-goldat10 | Numeric |
-xpat10 | Numeric |
-csat10 | Numeric |
-opp_goldat10 | Numeric |
-opp_xpat10 | Numeric |
-opp_csat10 | Numeric |
-golddiffat10 | Numeric |
-xpdiffat10 | Numeric |
-csdiffat10 | Numeric |
-killsat10 | Numeric |
-deathsat10 | Numeric |
-opp_killsat10 | Numeric |
-opp_assistsat10 | Numeric |
-opp_deathsat10 | Numeric |
-goldat15 | Numeric |
-xpat15 | Numeric |
-csat15 | Numeric |
-opp_goldat15 | Numeric |
-opp_xpat15 | Numeric |
-opp_csat15 | Numeric |
-golddiffat15 | Numeric |
-xpdiffat15 | Numeric |
-csdiffat15 | Numeric |
-killsat15 | Numeric |
-assistsat15 | Numeric |
-deathsat15 | Numeric |
-opp_killsat15 | Numeric |
-opp_assistsat15 | Numeric |
-opp_deathsat15 | Numeric |
+
 
 # Exploratory Data Analysis
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-Lol_match_data_2022 <- read_csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
+First, we conduct an exploratory data analysis.
+
+
+
+
+## Numerical Summaries
+
+```{r summary}
+summary(LCS_matches)
 ```
+From the a quick summary of our variables two things immediately stick out,
+there are thousands of observations with missing values, and the numeric
+variables have extreme values significantly deviant from the innerquartile
+range.
 
+This extreme variance is because our data observes the individual players of
+each team as well as the team's combined values, r=ecognizable by 
+`position == "team"`. 
 
-``` {r exploration}
-names(Lol_match_data_2022)
-head(Lol_match_data_2022)
-summary(Lol_match_data_2022)
-```
-We will use `result` as our response variable as that indicates
-whether it was a win or a lose. 
+## Graphical Summaries
 
-## Data Visualization
+### 
 
-```{r data_visualization}
+```{r summary-tables-1, warning=FALSE}
 
-for(i in 0:123) {
-  if(is.numeric(x)) {
-    hist(Lol_match_data_2022[,i], main = names(Lol_match_data_2022) [i])
-  }
-}
+LCS_matches %>%
+  group_by(result)%>%
+  summarise()
 
+  
 ```
 
 # Data Cleaning
 
 
+
 # Data Analysis
+
+
 
 # Hypotheses
 
+
+
 # Modeling
+
+
 
 # Conclusion
 
