@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(knitr)
 library(lubridate)
+library(corrplot)
 Lol_match_data_2022 <- read_csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
 ```
 
@@ -40,7 +41,7 @@ Lol_match_data_2022
 LCS_matches <- Lol_match_data_2022 %>%
   filter(league == "LCS",
          position == "team") %>%
-  subset(select = c('gameid',
+  subset(select = c(#'gameid',
                     'side',
                     'gamelength',
                     'result',
@@ -66,22 +67,23 @@ LCS_matches
 
 Variable | Type | Description
 ---------|------|------------
-gameid | Character | 
-side | Categorical |
-gamelength | Numeric |
-result | Binary |
-team kpm | Numeric |
-firstdragon | Binary |
-firstbaron | Binary |
-barons | Numeric |
-firsttower | Binary |
-towers | Numeric |
-firstmidtower | Binary |
-firsttothreetowers | Binary |
-inhibitors | Numeric |
-vspm | Numeric |
-earned gpm | Numeric |
-cspm | Numeric |
+gameid | Character | Game identification (two teams)
+side | Categorical | Side of the map given to team (Red or Blue)
+gamelength | Numeric | Length of game in seconds
+result | Binary | Win = 1, lose = 0
+team kpm | Numeric | Team's kills per minute
+firstdragon | Binary | True if team killed first dragon
+dragons | Numeric | Number of dragons killed by team
+firstbaron | Binary | True if team killed first baron
+barons | Numeric | Numer of dragons killed by team
+firsttower | Binary | True if team destroyed first tower
+towers | Numeric | Number of towers destroyed by team
+firstmidtower | Binary | True if team destroyed the first mid tower
+firsttothreetowers | Binary | True if team was first to destroy three towers
+inhibitors | Numeric | Number of inhibitors destroyed by team
+vspm | Numeric | Team's vision score per minute
+earned gpm | Numeric | Team's gold earned per minute
+cspm | Numeric | Team's creep score per minute
 
 
 # Exploratory Data Analysis
@@ -89,31 +91,24 @@ cspm | Numeric |
 First, we conduct an exploratory data analysis.
 
 
-
-
 ## Numerical Summaries
 
 ```{r summary}
 summary(LCS_matches)
 ```
-From the a quick summary of our variables two things immediately stick out,
-there are thousands of observations with missing values, and the numeric
-variables have extreme values significantly deviant from the innerquartile
-range.
 
-This extreme variance is because our data observes the individual players of
-each team as well as the team's combined values, r=ecognizable by 
-`position == "team"`. 
 
 ## Graphical Summaries
 
 ### 
 
 ```{r summary-tables-1, warning=FALSE}
+LCS_mtx <- as.matrix(LCS_matches)
 
 LCS_matches %>%
-  group_by(result)%>%
-  summarise()
+  data.matrix() %>%
+  cor()%>%
+  corrplot(is.corr = FALSE)
 
   
 ```

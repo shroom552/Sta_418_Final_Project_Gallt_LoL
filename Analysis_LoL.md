@@ -54,7 +54,7 @@ Lol_match_data_2022
 LCS_matches <- Lol_match_data_2022 %>%
   filter(league == "LCS",
          position == "team") %>%
-  subset(select = c('gameid',
+  subset(select = c(#'gameid',
                     'side',
                     'gamelength',
                     'result',
@@ -76,42 +76,42 @@ LCS_matches <- Lol_match_data_2022 %>%
 LCS_matches
 ```
 
-    ## # A tibble: 168 x 18
-    ##    gameid      side  gamelength result firstblood `team kpm` firstdragon dragons
-    ##    <chr>       <chr>      <dbl>  <dbl>      <dbl>      <dbl> <lgl>         <dbl>
-    ##  1 ESPORTSTMN~ Blue        1595      0          1     0.0376 FALSE             0
-    ##  2 ESPORTSTMN~ Red         1595      1          0     0.564  TRUE              4
-    ##  3 ESPORTSTMN~ Blue        2079      1          1     0.548  TRUE              4
-    ##  4 ESPORTSTMN~ Red         2079      0          0     0.260  FALSE             0
-    ##  5 ESPORTSTMN~ Blue        3007      0          0     0.299  TRUE              3
-    ##  6 ESPORTSTMN~ Red         3007      1          1     0.419  FALSE             4
-    ##  7 ESPORTSTMN~ Blue        1976      1          0     0.668  FALSE             2
-    ##  8 ESPORTSTMN~ Red         1976      0          1     0.334  TRUE              2
-    ##  9 ESPORTSTMN~ Blue        2149      1          0     0.475  TRUE              5
-    ## 10 ESPORTSTMN~ Red         2149      0          1     0.335  FALSE             0
-    ## # ... with 158 more rows, and 10 more variables: firstbaron <lgl>,
-    ## #   barons <dbl>, firsttower <lgl>, towers <dbl>, firstmidtower <lgl>,
-    ## #   firsttothreetowers <lgl>, inhibitors <dbl>, vspm <dbl>, earned gpm <dbl>,
-    ## #   cspm <dbl>
+    ## # A tibble: 168 x 17
+    ##    side  gamelength result firstblood `team kpm` firstdragon dragons firstbaron
+    ##    <chr>      <dbl>  <dbl>      <dbl>      <dbl> <lgl>         <dbl> <lgl>     
+    ##  1 Blue        1595      0          1     0.0376 FALSE             0 FALSE     
+    ##  2 Red         1595      1          0     0.564  TRUE              4 TRUE      
+    ##  3 Blue        2079      1          1     0.548  TRUE              4 TRUE      
+    ##  4 Red         2079      0          0     0.260  FALSE             0 FALSE     
+    ##  5 Blue        3007      0          0     0.299  TRUE              3 FALSE     
+    ##  6 Red         3007      1          1     0.419  FALSE             4 TRUE      
+    ##  7 Blue        1976      1          0     0.668  FALSE             2 TRUE      
+    ##  8 Red         1976      0          1     0.334  TRUE              2 FALSE     
+    ##  9 Blue        2149      1          0     0.475  TRUE              5 TRUE      
+    ## 10 Red         2149      0          1     0.335  FALSE             0 FALSE     
+    ## # ... with 158 more rows, and 9 more variables: barons <dbl>, firsttower <lgl>,
+    ## #   towers <dbl>, firstmidtower <lgl>, firsttothreetowers <lgl>,
+    ## #   inhibitors <dbl>, vspm <dbl>, earned gpm <dbl>, cspm <dbl>
 
-| Variable           | Type        | Description |
-|--------------------|-------------|-------------|
-| gameid             | Character   |             |
-| side               | Categorical |             |
-| gamelength         | Numeric     |             |
-| result             | Binary      |             |
-| team kpm           | Numeric     |             |
-| firstdragon        | Binary      |             |
-| firstbaron         | Binary      |             |
-| barons             | Numeric     |             |
-| firsttower         | Binary      |             |
-| towers             | Numeric     |             |
-| firstmidtower      | Binary      |             |
-| firsttothreetowers | Binary      |             |
-| inhibitors         | Numeric     |             |
-| vspm               | Numeric     |             |
-| earned gpm         | Numeric     |             |
-| cspm               | Numeric     |             |
+| Variable           | Type        | Description                                    |
+|--------------------|-------------|------------------------------------------------|
+| gameid             | Character   | Game identification (two teams)                |
+| side               | Categorical | Side of the map given to team (Red or Blue)    |
+| gamelength         | Numeric     | Length of game in seconds                      |
+| result             | Binary      | Win = 1, lose = 0                              |
+| team kpm           | Numeric     | Team’s kills per minute                        |
+| firstdragon        | Binary      | True if team killed first dragon               |
+| dragons            | Numeric     | Number of dragons killed by team               |
+| firstbaron         | Binary      | True if team killed first baron                |
+| barons             | Numeric     | Numer of dragons killed by team                |
+| firsttower         | Binary      | True if team destroyed first tower             |
+| towers             | Numeric     | Number of towers destroyed by team             |
+| firstmidtower      | Binary      | True if team destroyed the first mid tower     |
+| firsttothreetowers | Binary      | True if team was first to destroy three towers |
+| inhibitors         | Numeric     | Number of inhibitors destroyed by team         |
+| vspm               | Numeric     | Team’s vision score per minute                 |
+| earned gpm         | Numeric     | Team’s gold earned per minute                  |
+| cspm               | Numeric     | Team’s creep score per minute                  |
 
 # Exploratory Data Analysis
 
@@ -123,66 +123,47 @@ First, we conduct an exploratory data analysis.
 summary(LCS_matches)
 ```
 
-    ##     gameid              side             gamelength       result   
-    ##  Length:168         Length:168         Min.   :1443   Min.   :0.0  
-    ##  Class :character   Class :character   1st Qu.:1762   1st Qu.:0.0  
-    ##  Mode  :character   Mode  :character   Median :1956   Median :0.5  
-    ##                                        Mean   :1998   Mean   :0.5  
-    ##                                        3rd Qu.:2212   3rd Qu.:1.0  
-    ##                                        Max.   :3007   Max.   :1.0  
-    ##    firstblood     team kpm      firstdragon        dragons      firstbaron     
-    ##  Min.   :0.0   Min.   :0.0376   Mode :logical   Min.   :0.000   Mode :logical  
-    ##  1st Qu.:0.0   1st Qu.:0.2094   FALSE:84        1st Qu.:1.000   FALSE:85       
-    ##  Median :0.5   Median :0.3488   TRUE :84        Median :2.000   TRUE :83       
-    ##  Mean   :0.5   Mean   :0.3642                   Mean   :2.321                  
-    ##  3rd Qu.:1.0   3rd Qu.:0.4976                   3rd Qu.:4.000                  
-    ##  Max.   :1.0   Max.   :0.9979                   Max.   :5.000                  
-    ##      barons       firsttower          towers       firstmidtower  
-    ##  Min.   :0.0000   Mode :logical   Min.   : 0.000   Mode :logical  
-    ##  1st Qu.:0.0000   FALSE:84        1st Qu.: 2.000   FALSE:84       
-    ##  Median :1.0000   TRUE :84        Median : 7.000   TRUE :84       
-    ##  Mean   :0.6726                   Mean   : 6.238                  
-    ##  3rd Qu.:1.0000                   3rd Qu.:10.000                  
-    ##  Max.   :3.0000                   Max.   :11.000                  
-    ##  firsttothreetowers   inhibitors        vspm          earned gpm    
-    ##  Mode :logical      Min.   :0.00   Min.   : 4.283   Min.   : 775.1  
-    ##  FALSE:84           1st Qu.:0.00   1st Qu.: 6.851   1st Qu.: 977.6  
-    ##  TRUE :84           Median :1.00   Median : 7.643   Median :1122.5  
-    ##                     Mean   :1.06   Mean   : 7.571   Mean   :1137.9  
-    ##                     3rd Qu.:2.00   3rd Qu.: 8.262   3rd Qu.:1289.1  
-    ##                     Max.   :6.00   Max.   :10.363   Max.   :1467.6  
-    ##       cspm      
-    ##  Min.   :25.32  
-    ##  1st Qu.:31.72  
-    ##  Median :33.60  
-    ##  Mean   :34.00  
-    ##  3rd Qu.:35.56  
-    ##  Max.   :46.13
-
-From the a quick summary of our variables two things immediately stick
-out, there are thousands of observations with missing values, and the
-numeric variables have extreme values significantly deviant from the
-innerquartile range.
-
-This extreme variance is because our data observes the individual
-players of each team as well as the team’s combined values,
-r=ecognizable by `position == "team"`.
+    ##      side             gamelength       result      firstblood     team kpm     
+    ##  Length:168         Min.   :1443   Min.   :0.0   Min.   :0.0   Min.   :0.0376  
+    ##  Class :character   1st Qu.:1762   1st Qu.:0.0   1st Qu.:0.0   1st Qu.:0.2094  
+    ##  Mode  :character   Median :1956   Median :0.5   Median :0.5   Median :0.3488  
+    ##                     Mean   :1998   Mean   :0.5   Mean   :0.5   Mean   :0.3642  
+    ##                     3rd Qu.:2212   3rd Qu.:1.0   3rd Qu.:1.0   3rd Qu.:0.4976  
+    ##                     Max.   :3007   Max.   :1.0   Max.   :1.0   Max.   :0.9979  
+    ##  firstdragon        dragons      firstbaron          barons      
+    ##  Mode :logical   Min.   :0.000   Mode :logical   Min.   :0.0000  
+    ##  FALSE:84        1st Qu.:1.000   FALSE:85        1st Qu.:0.0000  
+    ##  TRUE :84        Median :2.000   TRUE :83        Median :1.0000  
+    ##                  Mean   :2.321                   Mean   :0.6726  
+    ##                  3rd Qu.:4.000                   3rd Qu.:1.0000  
+    ##                  Max.   :5.000                   Max.   :3.0000  
+    ##  firsttower          towers       firstmidtower   firsttothreetowers
+    ##  Mode :logical   Min.   : 0.000   Mode :logical   Mode :logical     
+    ##  FALSE:84        1st Qu.: 2.000   FALSE:84        FALSE:84          
+    ##  TRUE :84        Median : 7.000   TRUE :84        TRUE :84          
+    ##                  Mean   : 6.238                                     
+    ##                  3rd Qu.:10.000                                     
+    ##                  Max.   :11.000                                     
+    ##    inhibitors        vspm          earned gpm          cspm      
+    ##  Min.   :0.00   Min.   : 4.283   Min.   : 775.1   Min.   :25.32  
+    ##  1st Qu.:0.00   1st Qu.: 6.851   1st Qu.: 977.6   1st Qu.:31.72  
+    ##  Median :1.00   Median : 7.643   Median :1122.5   Median :33.60  
+    ##  Mean   :1.06   Mean   : 7.571   Mean   :1137.9   Mean   :34.00  
+    ##  3rd Qu.:2.00   3rd Qu.: 8.262   3rd Qu.:1289.1   3rd Qu.:35.56  
+    ##  Max.   :6.00   Max.   :10.363   Max.   :1467.6   Max.   :46.13
 
 ## Graphical Summaries
 
 ### 
 
 ``` r
-LCS_matches %>%
-  group_by(result)%>%
-  summarise()
+LCS_mtx <- as.matrix(LCS_matches)
+
+data.matrix(LCS_matches) %>%
+  corrplot(is.corr = FALSE)
 ```
 
-    ## # A tibble: 2 x 1
-    ##   result
-    ##    <dbl>
-    ## 1      0
-    ## 2      1
+![](Analysis_LoL_files/figure-gfm/summary-tables-1-1.png)<!-- -->
 
 # Data Cleaning
 
