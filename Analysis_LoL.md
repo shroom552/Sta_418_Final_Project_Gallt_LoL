@@ -159,8 +159,10 @@ summary(LCS_matches)
 ``` r
 LCS_mtx <- as.matrix(LCS_matches)
 
-data.matrix(LCS_matches) %>%
-  corrplot(is.corr = FALSE)
+LCS_matches %>%
+  data.matrix() %>%
+  cor()%>%
+  corrplot(is.corr = FALSE, order = 'FPC')
 ```
 
 ![](Analysis_LoL_files/figure-gfm/summary-tables-1-1.png)<!-- -->

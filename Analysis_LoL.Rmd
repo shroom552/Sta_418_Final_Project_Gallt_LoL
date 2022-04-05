@@ -108,7 +108,7 @@ LCS_mtx <- as.matrix(LCS_matches)
 LCS_matches %>%
   data.matrix() %>%
   cor()%>%
-  corrplot(is.corr = FALSE)
+  corrplot(is.corr = FALSE, order = 'FPC')
 
   
 ```
