@@ -11,7 +11,8 @@ library(tidyverse)
 library(knitr)
 library(lubridate)
 library(corrplot)
-Lol_match_data_2022 <- read_csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
+
+
 ```
 
 
@@ -20,7 +21,8 @@ Lol_match_data_2022 <- read_csv("2022_LoL_esports_match_data_from_OraclesElixir_
 League of Legends is a popular PC game. Teams all around the world compete with
 the hopes of making it to Worlds. Riot has released data for each player of each
 professional game of the 2022 season thus far. In this project I will perform 
-logistic regression in R on the `2022 Match Data` found on Oracle Elixir's [downloads page](https://oracleselixir.com/tools/downloads).
+logistic regression in R on the `2022 Match Data` found on Oracle Elixir's 
+[downloads page](https://oracleselixir.com/tools/downloads).
 `2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv`
 
 
@@ -32,16 +34,29 @@ most important, what objectives are the most decisive, how do the teams and
 leagues differentiate in strategy.
 
 # Data
-The data we have available is quite large and detailed. So I will be reducing 
-the data to key variables and LCS matches.
 
-```{r reduce}
-Lol_match_data_2022
+First, a quick view of our data.
+
+
+```{r data, warning=FALSE}
+
+Lol_match_data_2022 <- 
+  read_csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
+
+head(Lol_match_data_2022)
+
+```
+
+The data we have available is quite large and detailed. So I will be reducing 
+the data to; key variables, the "LCS"(North American) `league`, and the entire 
+teams stats as valued as "team" for the `position` variable.
+
+```{r reduce, warning=FALSE}
 
 LCS_matches <- Lol_match_data_2022 %>%
   filter(league == "LCS",
          position == "team") %>%
-  subset(select = c(#'gameid',
+  subset(select = c('gameid',
                     'side',
                     'gamelength',
                     'result',
@@ -59,9 +74,7 @@ LCS_matches <- Lol_match_data_2022 %>%
                     'vspm',
                     'earned gpm',
                     'cspm'))
-
-LCS_matches
-
+head(LCS_matches)
 
 ```
 
@@ -91,10 +104,12 @@ cspm | Numeric | Team's creep score per minute
 First, we conduct an exploratory data analysis.
 
 
+
 ## Numerical Summaries
 
 ```{r summary}
 summary(LCS_matches)
+
 ```
 
 
@@ -110,6 +125,7 @@ LCS_matches %>%
   corrplot(is.corr = FALSE, order = 'FPC')
 
 ```
+
 
 # Data Cleaning
 

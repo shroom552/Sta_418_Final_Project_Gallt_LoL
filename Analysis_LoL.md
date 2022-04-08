@@ -22,39 +22,57 @@ how do the teams and leagues differentiate in strategy.
 
 # Data
 
-The data we have available is quite large and detailed. So I will be
-reducing the data to key variables and LCS matches.
+First, a quick view of our data.
 
 ``` r
-Lol_match_data_2022
+Lol_match_data_2022 <- 
+  read_csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
 ```
 
-    ## # A tibble: 30,528 x 123
-    ##    gameid datacompleteness url   league  year split playoffs date               
-    ##    <chr>  <chr>            <chr> <chr>  <dbl> <chr>    <dbl> <dttm>             
-    ##  1 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  2 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  3 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  4 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  5 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  6 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  7 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  8 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ##  9 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## 10 ESPOR~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
-    ## # ... with 30,518 more rows, and 115 more variables: game <dbl>, patch <dbl>,
-    ## #   participantid <dbl>, side <chr>, position <chr>, playername <chr>,
-    ## #   playerid <chr>, teamname <chr>, teamid <chr>, champion <chr>, ban1 <chr>,
-    ## #   ban2 <chr>, ban3 <chr>, ban4 <chr>, ban5 <chr>, gamelength <dbl>,
-    ## #   result <dbl>, kills <dbl>, deaths <dbl>, assists <dbl>, teamkills <dbl>,
+    ## Rows: 30528 Columns: 123
+
+    ## -- Column specification --------------------------------------------------------
+    ## Delimiter: ","
+    ## chr  (17): gameid, datacompleteness, url, league, split, side, position, pla...
+    ## dbl  (85): year, playoffs, game, patch, participantid, gamelength, result, k...
+    ## lgl  (20): firstdragon, elementaldrakes, opp_elementaldrakes, infernals, mou...
+    ## dttm  (1): date
+
+    ## 
+    ## i Use `spec()` to retrieve the full column specification for this data.
+    ## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+head(Lol_match_data_2022)
+```
+
+    ## # A tibble: 6 x 123
+    ##   gameid  datacompleteness url   league  year split playoffs date               
+    ##   <chr>   <chr>            <chr> <chr>  <dbl> <chr>    <dbl> <dttm>             
+    ## 1 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 2 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 3 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 4 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 5 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## 6 ESPORT~ complete         <NA>  LCK CL  2022 Spri~        0 2022-01-10 07:44:08
+    ## # ... with 115 more variables: game <dbl>, patch <dbl>, participantid <dbl>,
+    ## #   side <chr>, position <chr>, playername <chr>, playerid <chr>,
+    ## #   teamname <chr>, teamid <chr>, champion <chr>, ban1 <chr>, ban2 <chr>,
+    ## #   ban3 <chr>, ban4 <chr>, ban5 <chr>, gamelength <dbl>, result <dbl>,
+    ## #   kills <dbl>, deaths <dbl>, assists <dbl>, teamkills <dbl>,
     ## #   teamdeaths <dbl>, doublekills <dbl>, triplekills <dbl>, quadrakills <dbl>,
     ## #   pentakills <dbl>, firstblood <dbl>, firstbloodkill <dbl>, ...
+
+The data we have available is quite large and detailed. So I will be
+reducing the data to; key variables, the “LCS”(North American) `league`,
+and the entire teams stats as valued as “team” for the `position`
+variable.
 
 ``` r
 LCS_matches <- Lol_match_data_2022 %>%
   filter(league == "LCS",
          position == "team") %>%
-  subset(select = c(#'gameid',
+  subset(select = c('gameid',
                     'side',
                     'gamelength',
                     'result',
@@ -72,24 +90,19 @@ LCS_matches <- Lol_match_data_2022 %>%
                     'vspm',
                     'earned gpm',
                     'cspm'))
-
-LCS_matches
+head(LCS_matches)
 ```
 
-    ## # A tibble: 168 x 17
-    ##    side  gamelength result firstblood `team kpm` firstdragon dragons firstbaron
-    ##    <chr>      <dbl>  <dbl>      <dbl>      <dbl> <lgl>         <dbl> <lgl>     
-    ##  1 Blue        1595      0          1     0.0376 FALSE             0 FALSE     
-    ##  2 Red         1595      1          0     0.564  TRUE              4 TRUE      
-    ##  3 Blue        2079      1          1     0.548  TRUE              4 TRUE      
-    ##  4 Red         2079      0          0     0.260  FALSE             0 FALSE     
-    ##  5 Blue        3007      0          0     0.299  TRUE              3 FALSE     
-    ##  6 Red         3007      1          1     0.419  FALSE             4 TRUE      
-    ##  7 Blue        1976      1          0     0.668  FALSE             2 TRUE      
-    ##  8 Red         1976      0          1     0.334  TRUE              2 FALSE     
-    ##  9 Blue        2149      1          0     0.475  TRUE              5 TRUE      
-    ## 10 Red         2149      0          1     0.335  FALSE             0 FALSE     
-    ## # ... with 158 more rows, and 9 more variables: barons <dbl>, firsttower <lgl>,
+    ## # A tibble: 6 x 18
+    ##   gameid       side  gamelength result firstblood `team kpm` firstdragon dragons
+    ##   <chr>        <chr>      <dbl>  <dbl>      <dbl>      <dbl> <lgl>         <dbl>
+    ## 1 ESPORTSTMNT~ Blue        1595      0          1     0.0376 FALSE             0
+    ## 2 ESPORTSTMNT~ Red         1595      1          0     0.564  TRUE              4
+    ## 3 ESPORTSTMNT~ Blue        2079      1          1     0.548  TRUE              4
+    ## 4 ESPORTSTMNT~ Red         2079      0          0     0.260  FALSE             0
+    ## 5 ESPORTSTMNT~ Blue        3007      0          0     0.299  TRUE              3
+    ## 6 ESPORTSTMNT~ Red         3007      1          1     0.419  FALSE             4
+    ## # ... with 10 more variables: firstbaron <lgl>, barons <dbl>, firsttower <lgl>,
     ## #   towers <dbl>, firstmidtower <lgl>, firsttothreetowers <lgl>,
     ## #   inhibitors <dbl>, vspm <dbl>, earned gpm <dbl>, cspm <dbl>
 
@@ -123,34 +136,41 @@ First, we conduct an exploratory data analysis.
 summary(LCS_matches)
 ```
 
-    ##      side             gamelength       result      firstblood     team kpm     
-    ##  Length:168         Min.   :1443   Min.   :0.0   Min.   :0.0   Min.   :0.0376  
-    ##  Class :character   1st Qu.:1762   1st Qu.:0.0   1st Qu.:0.0   1st Qu.:0.2094  
-    ##  Mode  :character   Median :1956   Median :0.5   Median :0.5   Median :0.3488  
-    ##                     Mean   :1998   Mean   :0.5   Mean   :0.5   Mean   :0.3642  
-    ##                     3rd Qu.:2212   3rd Qu.:1.0   3rd Qu.:1.0   3rd Qu.:0.4976  
-    ##                     Max.   :3007   Max.   :1.0   Max.   :1.0   Max.   :0.9979  
-    ##  firstdragon        dragons      firstbaron          barons      
-    ##  Mode :logical   Min.   :0.000   Mode :logical   Min.   :0.0000  
-    ##  FALSE:84        1st Qu.:1.000   FALSE:85        1st Qu.:0.0000  
-    ##  TRUE :84        Median :2.000   TRUE :83        Median :1.0000  
-    ##                  Mean   :2.321                   Mean   :0.6726  
-    ##                  3rd Qu.:4.000                   3rd Qu.:1.0000  
-    ##                  Max.   :5.000                   Max.   :3.0000  
-    ##  firsttower          towers       firstmidtower   firsttothreetowers
-    ##  Mode :logical   Min.   : 0.000   Mode :logical   Mode :logical     
-    ##  FALSE:84        1st Qu.: 2.000   FALSE:84        FALSE:84          
-    ##  TRUE :84        Median : 7.000   TRUE :84        TRUE :84          
-    ##                  Mean   : 6.238                                     
-    ##                  3rd Qu.:10.000                                     
-    ##                  Max.   :11.000                                     
-    ##    inhibitors        vspm          earned gpm          cspm      
-    ##  Min.   :0.00   Min.   : 4.283   Min.   : 775.1   Min.   :25.32  
-    ##  1st Qu.:0.00   1st Qu.: 6.851   1st Qu.: 977.6   1st Qu.:31.72  
-    ##  Median :1.00   Median : 7.643   Median :1122.5   Median :33.60  
-    ##  Mean   :1.06   Mean   : 7.571   Mean   :1137.9   Mean   :34.00  
-    ##  3rd Qu.:2.00   3rd Qu.: 8.262   3rd Qu.:1289.1   3rd Qu.:35.56  
-    ##  Max.   :6.00   Max.   :10.363   Max.   :1467.6   Max.   :46.13
+    ##     gameid              side             gamelength       result   
+    ##  Length:168         Length:168         Min.   :1443   Min.   :0.0  
+    ##  Class :character   Class :character   1st Qu.:1762   1st Qu.:0.0  
+    ##  Mode  :character   Mode  :character   Median :1956   Median :0.5  
+    ##                                        Mean   :1998   Mean   :0.5  
+    ##                                        3rd Qu.:2212   3rd Qu.:1.0  
+    ##                                        Max.   :3007   Max.   :1.0  
+    ##    firstblood     team kpm      firstdragon        dragons      firstbaron     
+    ##  Min.   :0.0   Min.   :0.0376   Mode :logical   Min.   :0.000   Mode :logical  
+    ##  1st Qu.:0.0   1st Qu.:0.2094   FALSE:84        1st Qu.:1.000   FALSE:85       
+    ##  Median :0.5   Median :0.3488   TRUE :84        Median :2.000   TRUE :83       
+    ##  Mean   :0.5   Mean   :0.3642                   Mean   :2.321                  
+    ##  3rd Qu.:1.0   3rd Qu.:0.4976                   3rd Qu.:4.000                  
+    ##  Max.   :1.0   Max.   :0.9979                   Max.   :5.000                  
+    ##      barons       firsttower          towers       firstmidtower  
+    ##  Min.   :0.0000   Mode :logical   Min.   : 0.000   Mode :logical  
+    ##  1st Qu.:0.0000   FALSE:84        1st Qu.: 2.000   FALSE:84       
+    ##  Median :1.0000   TRUE :84        Median : 7.000   TRUE :84       
+    ##  Mean   :0.6726                   Mean   : 6.238                  
+    ##  3rd Qu.:1.0000                   3rd Qu.:10.000                  
+    ##  Max.   :3.0000                   Max.   :11.000                  
+    ##  firsttothreetowers   inhibitors        vspm          earned gpm    
+    ##  Mode :logical      Min.   :0.00   Min.   : 4.283   Min.   : 775.1  
+    ##  FALSE:84           1st Qu.:0.00   1st Qu.: 6.851   1st Qu.: 977.6  
+    ##  TRUE :84           Median :1.00   Median : 7.643   Median :1122.5  
+    ##                     Mean   :1.06   Mean   : 7.571   Mean   :1137.9  
+    ##                     3rd Qu.:2.00   3rd Qu.: 8.262   3rd Qu.:1289.1  
+    ##                     Max.   :6.00   Max.   :10.363   Max.   :1467.6  
+    ##       cspm      
+    ##  Min.   :25.32  
+    ##  1st Qu.:31.72  
+    ##  Median :33.60  
+    ##  Mean   :34.00  
+    ##  3rd Qu.:35.56  
+    ##  Max.   :46.13
 
 ## Graphical Summaries
 
