@@ -11,7 +11,7 @@ library(tidyverse)
 library(knitr)
 library(lubridate)
 library(corrplot)
-
+library(Hmisc)
 
 ```
 
@@ -125,7 +125,46 @@ LCS_matches %>%
   corrplot(is.corr = FALSE, order = 'FPC')
 
 ```
+### Checking data for relationships
+To check the shape of the data columns to see if they might be well fit by
+any particular random variables, and if there are any outliers, 
+we plot histograms of each variable. These reveal that to our luck, there
+aren't any serious outliers and that also specific pieces of data seem to fit
+specific distributions such as
+Normal - gamelength, vspm, cspm
+Pareto/Exponential - inhibitors
+Bivariate Normal - towers
 
+This provides us some insight onto the nature of how these might affect game 
+outcomes.
+
+```{r }
+hist.data.frame(LCS_matches)
+```
+
+```{r whiskerplot}
+
+num_LCS <- LCS_matches %>%
+  select_if(is.numeric)
+
+for(i in 1:11) {
+   boxplot(num_LCS[,i], main=names(num_LCS)[i])
+}
+
+```
+```{r boxplot}
+
+non_num_LCS <- LCS_matches %>%
+  select_if(negate(is.numeric))
+non_num_LCS
+
+#for (i in 1:7) {
+#  non_num_LCS %>%
+#    count(i)
+#}
+
+
+```
 
 # Data Cleaning
 

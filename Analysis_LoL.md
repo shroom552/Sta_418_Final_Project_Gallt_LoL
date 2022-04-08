@@ -183,7 +183,62 @@ LCS_matches %>%
   corrplot(is.corr = FALSE, order = 'FPC')
 ```
 
-![](Analysis_LoL_files/figure-gfm/summary-tables-1-1.png)<!-- -->
+![](Analysis_LoL_files/figure-gfm/summary-tables-1-1.png)<!-- --> ###
+Checking data for relationships To check the shape of the data columns
+to see if they might be well fit by any particular random variables, and
+if there are any outliers, we plot histograms of each variable. These
+reveal that to our luck, there aren’t any serious outliers and that also
+specific pieces of data seem to fit specific distributions such as
+Normal - gamelength, vspm, cspm Pareto/Exponential - inhibitors
+Bivariate Normal - towers
+
+This provides us some insight onto the nature of how these might affect
+game outcomes.
+
+``` r
+hist.data.frame(LCS_matches)
+```
+
+![](Analysis_LoL_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+``` r
+num_LCS <- LCS_matches %>%
+  select_if(is.numeric)
+
+for(i in 1:11) {
+   boxplot(num_LCS[,i], main=names(num_LCS)[i])
+}
+```
+
+![](Analysis_LoL_files/figure-gfm/whiskerplot-1.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-2.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-3.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-4.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-5.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-6.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-7.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-8.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-9.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-10.png)<!-- -->![](Analysis_LoL_files/figure-gfm/whiskerplot-11.png)<!-- -->
+
+``` r
+non_num_LCS <- LCS_matches %>%
+  select_if(negate(is.numeric))
+non_num_LCS
+```
+
+    ## # A tibble: 168 x 7
+    ##    gameid side  firstdragon firstbaron firsttower firstmidtower firsttothreetow~
+    ##    <chr>  <chr> <lgl>       <lgl>      <lgl>      <lgl>         <lgl>           
+    ##  1 ESPOR~ Blue  FALSE       FALSE      FALSE      FALSE         FALSE           
+    ##  2 ESPOR~ Red   TRUE        TRUE       TRUE       TRUE          TRUE            
+    ##  3 ESPOR~ Blue  TRUE        TRUE       FALSE      FALSE         FALSE           
+    ##  4 ESPOR~ Red   FALSE       FALSE      TRUE       TRUE          TRUE            
+    ##  5 ESPOR~ Blue  TRUE        FALSE      TRUE       TRUE          TRUE            
+    ##  6 ESPOR~ Red   FALSE       TRUE       FALSE      FALSE         FALSE           
+    ##  7 ESPOR~ Blue  FALSE       TRUE       TRUE       TRUE          TRUE            
+    ##  8 ESPOR~ Red   TRUE        FALSE      FALSE      FALSE         FALSE           
+    ##  9 ESPOR~ Blue  TRUE        TRUE       TRUE       TRUE          TRUE            
+    ## 10 ESPOR~ Red   FALSE       FALSE      FALSE      FALSE         FALSE           
+    ## # ... with 158 more rows
+
+``` r
+#for (i in 1:7) {
+#  non_num_LCS %>%
+#    count(i)
+#}
+```
 
 # Data Cleaning
 
