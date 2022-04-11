@@ -12,6 +12,7 @@ library(knitr)
 library(lubridate)
 library(corrplot)
 library(Hmisc)
+library(caret)
 
 ```
 
@@ -43,7 +44,7 @@ First, a quick view of our data.
 Lol_match_data_2022 <- 
   read_csv("2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv")
 
-head(Lol_match_data_2022)
+Lol_match_data_2022
 
 ```
 
@@ -73,8 +74,13 @@ LCS_matches <- Lol_match_data_2022 %>%
                     'inhibitors',
                     'vspm',
                     'earned gpm',
-                    'cspm'))
-head(LCS_matches)
+                    'cspm')) %>%
+  rename(earned_gpm = `earned gpm`,
+         team_kpm = `team kpm`)
+
+LCS_matches$result <- LCS_matches$result == TRUE
+
+LCS_matches
 
 ```
 
@@ -84,7 +90,7 @@ gameid | Character | Game identification (two teams)
 side | Categorical | Side of the map given to team (Red or Blue)
 gamelength | Numeric | Length of game in seconds
 result | Binary | Win = 1, lose = 0
-team kpm | Numeric | Team's kills per minute
+team_kpm | Numeric | Team's kills per minute
 firstdragon | Binary | True if team killed first dragon
 dragons | Numeric | Number of dragons killed by team
 firstbaron | Binary | True if team killed first baron
@@ -95,7 +101,7 @@ firstmidtower | Binary | True if team destroyed the first mid tower
 firsttothreetowers | Binary | True if team was first to destroy three towers
 inhibitors | Numeric | Number of inhibitors destroyed by team
 vspm | Numeric | Team's vision score per minute
-earned gpm | Numeric | Team's gold earned per minute
+earned_gpm | Numeric | Team's gold earned per minute
 cspm | Numeric | Team's creep score per minute
 
 
@@ -115,60 +121,217 @@ summary(LCS_matches)
 
 ## Graphical Summaries
 
-### 
+### Pearson corrolation plot
 
-```{r summary-tables-1, warning=FALSE}
+Here we create a correlation that visualizes the linear correlation between each
+pair of variables
+```{r corr_matrix, warning=FALSE}
 
 LCS_matches %>%
   data.matrix() %>%
   cor()%>%
   corrplot(is.corr = FALSE, order = 'FPC')
 
+  
 ```
+
+
 ### Checking data for relationships
-To check the shape of the data columns to see if they might be well fit by
-any particular random variables, and if there are any outliers, 
-we plot histograms of each variable. These reveal that to our luck, there
-aren't any serious outliers and that also specific pieces of data seem to fit
-specific distributions such as
+
+To check the shape of the data columns to see if they might be well fit by any
+particular random variables, and if there are any outliers, we plot histograms
+and whisker plots of each variable as applicable. 
+
+```{r data_shapes}
+
+hist.data.frame(LCS_matches)
+
+num_LCS <- LCS_matches %>%
+  select_if(is.numeric)
+
+for(i in 1:10) {
+   boxplot(num_LCS[,i], main=names(num_LCS)[i])
+}
+
+```
+
+These reveal that to our luck, there aren't any serious 
+outliers and that also specific pieces of data seem to fit specific 
+distributions such as
 Normal - gamelength, vspm, cspm
 Pareto/Exponential - inhibitors
 Bivariate Normal - towers
 
 This provides us some insight onto the nature of how these might affect game 
-outcomes.
+outcomes and also how they may relate to one another
 
-```{r }
-hist.data.frame(LCS_matches)
-```
+``` {r pairs, warning= FALSE}
+cols <- character(nrow(LCS_matches))
+cols[] <- "black"
+cols[LCS_matches$result == TRUE] <- "red"
 
-```{r whiskerplot}
 
-num_LCS <- LCS_matches %>%
-  select_if(is.numeric)
-
-for(i in 1:11) {
-   boxplot(num_LCS[,i], main=names(num_LCS)[i])
-}
-
-```
-```{r boxplot}
-
-non_num_LCS <- LCS_matches %>%
-  select_if(negate(is.numeric))
-non_num_LCS
-
-#for (i in 1:7) {
-#  non_num_LCS %>%
-#    count(i)
-#}
-
+pairs(num_LCS, col=cols, order = "FPC")
 
 ```
 
-# Data Cleaning
+
+```{r linear_model}
+LCS_model = lm(LCS_matches$result ~ ., data = num_LCS)
+summary(LCS_model)
+```
+### Regressions of strongly correlated variables
+
+Here we will do some regression modeling of `result` vs `towers`,`inhibitors`, 
+`earned_gpm`, and `team_kpm`. I've chosen these variables because they all
+strongly correlate with each other and display similar correlation patterns with
+the other variables.
+
+```{r towers_regression }
+
+input <- LCS_matches[,c("result", "towers")]
+
+model_towers <- glm(formula = result ~ towers, data = input, family = binomial)
+summary(model_towers)
+
+tower_regression <- data.frame(towers=seq(min(LCS_matches$towers),
+                                          max(LCS_matches$towers),
+                                          len=500))
+
+tower_regression$result = predict(model_towers, 
+                                  tower_regression, 
+                                  type="response")
+
+plot(result ~ towers,
+     data=LCS_matches,
+     col="steelblue")
+
+lines(result ~ towers,
+      tower_regression,
+      lwd=2)
+
+```
+
+```{r baron_regression }
+
+input <- LCS_matches[,c("result", "barons")]
+
+model_barons <- glm(formula = result ~ barons,
+                        data = input,
+                        family = binomial)
+
+summary(model_barons)
+
+baron_regression <- data.frame(barons=seq(min(LCS_matches$barons),
+                                                  max(LCS_matches$barons),
+                                                  len=500))
+
+baron_regression$result = predict(model_barons,
+                                      baron_regression,
+                                      type="response")
+
+plot(result ~ barons,
+     data=LCS_matches,
+     col="steelblue")
+
+lines(result ~ barons,
+      baron_regression,
+      lwd=2)
+
+```
+
+```{r dragon_regression }
+
+input <- LCS_matches[,c("result", "dragons")]
+
+model_dragons <- glm(formula = result ~ dragons,
+                        data = input,
+                        family = binomial)
+
+summary(model_dragons)
+
+dragon_regression <- data.frame(dragons = seq(min(LCS_matches$dragons),
+                                                  max(LCS_matches$dragons),
+                                                  len = 500))
+
+dragon_regression$result = predict(model_dragons,
+                                      dragon_regression,
+                                      type = "response")
+
+plot(result ~ dragons,
+     data = LCS_matches,
+     col = "steelblue")
+
+lines(result ~ dragons,
+      dragon_regression,
+      lwd = 2)
+
+```
+
+```{r tkpm_regression }
+
+input <- LCS_matches[,c("result", "team_kpm")]
+
+model_tkpm <- glm(formula = result ~ team_kpm,
+                        data = input,
+                        family = binomial)
+
+summary(model_tkpm)
+
+tkpm_regression <- data.frame(team_kpm = seq(min(LCS_matches$team_kpm),
+                                                  max(LCS_matches$team_kpm),
+                                                  len = 500))
+
+tkpm_regression$result = predict(model_tkpm,
+                                 tkpm_regression,
+                                 type = "response")
+
+plot(result ~ team_kpm,
+     data = LCS_matches,
+     col = "steelblue")
+
+lines(result ~ team_kpm,
+      tkpm_regression,
+      lwd = 2)
+
+```
 
 
+
+
+# Data Cleaning and Wrangling
+
+As seen in our `summary` of `LCS_matches`, after reducing our dataset we no 
+longer have any missing values! There's one other thing we want to consider in
+data cleaning though, outliers. From our whisker plots we do see outliers.
+However, I don't believe that any of them are outlandish enough to warrant
+removal. So it appears there's no cleaning to do.
+
+I'll note that I've already made a few changes to the data in pursuit of peace;
+I've changed the variables names of `team kpm` and `earned gpm` to `team_kpm` 
+and `earned_gpm`. As well as converted `result` to logical values. This was
+simple due to the cleanliness of our data.
+
+I would further my data wrangling by combining and binning some of my strongly
+correlated variables.
+
+
+```{r wrangle}
+
+new_model = lm(LCS_matches$result ~ . - towers, data = LCS_matches)
+summary(new_model)$r.squared
+
+new_model = lm(LCS_matches$result ~ . - barons, data = LCS_matches)
+summary(new_model)$r.squared
+
+new_model = lm(LCS_matches$result ~ . - dragons, data = LCS_matches)
+summary(new_model)$r.squared
+
+new_model = new_model = lm(LCS_matches$result ~ . - team_kpm, data = LCS_matches)
+summary(new_model)$r.squared
+```
+
+Since
 
 # Data Analysis
 
