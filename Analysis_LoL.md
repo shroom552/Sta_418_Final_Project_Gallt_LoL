@@ -11,7 +11,8 @@ for each player of each professional game of the 2022 season thus far.
 In this project I will perform logistic regression in R on the
 `2022 Match Data` found on Oracle Elixir’s [downloads
 page](https://oracleselixir.com/tools/downloads).
-`2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv`
+`2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv` I imported
+the data on February 28th, 2022. This data has been updated since.
 
 # Research Questions
 
@@ -191,13 +192,14 @@ summary(LCS_matches)
 ### Pearson corrolation plot
 
 Here we create a correlation that visualizes the linear correlation
-between each pair of variables
+between each pair of variables and use `order = 'AOE'` to organize our
+variables based off their eigenvectors.
 
 ``` r
 LCS_matches %>%
   data.matrix() %>%
-  cor()%>%
-  corrplot(is.corr = FALSE, order = 'FPC')
+  cor() %>%
+  corrplot(is.corr = FALSE, order = 'AOE')
 ```
 
 ![](Analysis_LoL_files/figure-gfm/corr_matrix-1.png)<!-- -->
@@ -206,24 +208,23 @@ LCS_matches %>%
 
 To check the shape of the data columns to see if they might be well fit
 by any particular random variables, and if there are any outliers, we
-plot histograms and whisker plots of each variable as applicable.
+create whisker plots of each variable as applicable.
 
 ``` r
-hist.data.frame(LCS_matches)
-```
+par(mar=c(.5,.5,.5,.5))
 
-![](Analysis_LoL_files/figure-gfm/data_shapes-1.png)<!-- -->
-
-``` r
 num_LCS <- LCS_matches %>%
   select_if(is.numeric)
 
+par(mfrow = c(2,5))
+
 for(i in 1:10) {
-   boxplot(num_LCS[,i], main=names(num_LCS)[i])
+   boxplot(num_LCS[,i],
+           main = names(num_LCS)[i])
 }
 ```
 
-![](Analysis_LoL_files/figure-gfm/data_shapes-2.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-3.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-4.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-5.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-6.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-7.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-8.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-9.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-10.png)<!-- -->![](Analysis_LoL_files/figure-gfm/data_shapes-11.png)<!-- -->
+![](Analysis_LoL_files/figure-gfm/data_shapes-1.png)<!-- -->
 
 These reveal that to our luck, there aren’t any serious outliers and
 that also specific pieces of data seem to fit specific distributions
@@ -235,11 +236,14 @@ game outcomes and also how they may relate to one another
 
 ``` r
 cols <- character(nrow(LCS_matches))
+
 cols[] <- "black"
+
 cols[LCS_matches$result == TRUE] <- "red"
 
-
-pairs(num_LCS, col=cols, order = "FPC")
+pairs(num_LCS,
+      col=cols,
+      order = "FPC")
 ```
 
 ![](Analysis_LoL_files/figure-gfm/pairs-1.png)<!-- -->
@@ -288,6 +292,7 @@ display similar correlation patterns with the other variables.
 input <- LCS_matches[,c("result", "towers")]
 
 model_towers <- glm(formula = result ~ towers, data = input, family = binomial)
+
 summary(model_towers)
 ```
 
@@ -377,12 +382,12 @@ baron_regression$result = predict(model_barons,
                                       type="response")
 
 plot(result ~ barons,
-     data=LCS_matches,
-     col="steelblue")
+     data = LCS_matches,
+     col = "steelblue")
 
 lines(result ~ barons,
       baron_regression,
-      lwd=2)
+      lwd = 2)
 ```
 
 ![](Analysis_LoL_files/figure-gfm/baron_regression-1.png)<!-- -->
@@ -511,6 +516,7 @@ strongly correlated variables.
 
 ``` r
 new_model = lm(LCS_matches$result ~ . - towers, data = LCS_matches)
+
 summary(new_model)$r.squared
 ```
 
@@ -518,6 +524,7 @@ summary(new_model)$r.squared
 
 ``` r
 new_model = lm(LCS_matches$result ~ . - barons, data = LCS_matches)
+
 summary(new_model)$r.squared
 ```
 
@@ -525,19 +532,23 @@ summary(new_model)$r.squared
 
 ``` r
 new_model = lm(LCS_matches$result ~ . - dragons, data = LCS_matches)
+
 summary(new_model)$r.squared
 ```
 
     ## [1] 0.9302447
 
 ``` r
-new_model = new_model = lm(LCS_matches$result ~ . - team_kpm, data = LCS_matches)
+new_model = lm(LCS_matches$result ~ . - team_kpm, data = LCS_matches)
+
 summary(new_model)$r.squared
 ```
 
     ## [1] 0.9296008
 
-Since
+I do believe these are all worth keeping but will also perform logistic
+regression with the indicator variable as `barons`,`dragons`, and
+`team_kpm`.
 
 # Data Analysis
 

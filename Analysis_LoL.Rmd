@@ -25,6 +25,7 @@ professional game of the 2022 season thus far. In this project I will perform
 logistic regression in R on the `2022 Match Data` found on Oracle Elixir's 
 [downloads page](https://oracleselixir.com/tools/downloads).
 `2022_LoL_esports_match_data_from_OraclesElixir_20220228.csv`
+I imported the data on February 28th, 2022. This data has been updated since.
 
 
 # Research Questions
@@ -124,13 +125,14 @@ summary(LCS_matches)
 ### Pearson corrolation plot
 
 Here we create a correlation that visualizes the linear correlation between each
-pair of variables
+pair of variables and use `order = 'AOE'` to organize our variables based off
+their eigenvectors.
 ```{r corr_matrix, warning=FALSE}
 
 LCS_matches %>%
   data.matrix() %>%
-  cor()%>%
-  corrplot(is.corr = FALSE, order = 'FPC')
+  cor() %>%
+  corrplot(is.corr = FALSE, order = 'AOE')
 
   
 ```
@@ -139,18 +141,21 @@ LCS_matches %>%
 ### Checking data for relationships
 
 To check the shape of the data columns to see if they might be well fit by any
-particular random variables, and if there are any outliers, we plot histograms
-and whisker plots of each variable as applicable. 
+particular random variables, and if there are any outliers, we create whisker 
+plots of each variable as applicable. 
 
 ```{r data_shapes}
 
-hist.data.frame(LCS_matches)
+par(mar=c(.5,.5,.5,.5))
 
 num_LCS <- LCS_matches %>%
   select_if(is.numeric)
 
+par(mfrow = c(2,5))
+
 for(i in 1:10) {
-   boxplot(num_LCS[,i], main=names(num_LCS)[i])
+   boxplot(num_LCS[,i],
+           main = names(num_LCS)[i])
 }
 
 ```
@@ -166,19 +171,25 @@ This provides us some insight onto the nature of how these might affect game
 outcomes and also how they may relate to one another
 
 ``` {r pairs, warning= FALSE}
+
 cols <- character(nrow(LCS_matches))
+
 cols[] <- "black"
+
 cols[LCS_matches$result == TRUE] <- "red"
 
-
-pairs(num_LCS, col=cols, order = "FPC")
+pairs(num_LCS,
+      col=cols,
+      order = "FPC")
 
 ```
 
 
 ```{r linear_model}
+
 LCS_model = lm(LCS_matches$result ~ ., data = num_LCS)
 summary(LCS_model)
+
 ```
 ### Regressions of strongly correlated variables
 
@@ -192,6 +203,7 @@ the other variables.
 input <- LCS_matches[,c("result", "towers")]
 
 model_towers <- glm(formula = result ~ towers, data = input, family = binomial)
+
 summary(model_towers)
 
 tower_regression <- data.frame(towers=seq(min(LCS_matches$towers),
@@ -231,12 +243,12 @@ baron_regression$result = predict(model_barons,
                                       type="response")
 
 plot(result ~ barons,
-     data=LCS_matches,
-     col="steelblue")
+     data = LCS_matches,
+     col = "steelblue")
 
 lines(result ~ barons,
       baron_regression,
-      lwd=2)
+      lwd = 2)
 
 ```
 
@@ -319,19 +331,25 @@ correlated variables.
 ```{r wrangle}
 
 new_model = lm(LCS_matches$result ~ . - towers, data = LCS_matches)
+
 summary(new_model)$r.squared
 
 new_model = lm(LCS_matches$result ~ . - barons, data = LCS_matches)
+
 summary(new_model)$r.squared
 
 new_model = lm(LCS_matches$result ~ . - dragons, data = LCS_matches)
+
 summary(new_model)$r.squared
 
-new_model = new_model = lm(LCS_matches$result ~ . - team_kpm, data = LCS_matches)
+new_model = lm(LCS_matches$result ~ . - team_kpm, data = LCS_matches)
+
 summary(new_model)$r.squared
+
 ```
 
-Since
+I do believe these are all worth keeping but will also perform logistic
+regression with the indicator variable as `barons`,`dragons`, and `team_kpm`.
 
 # Data Analysis
 
