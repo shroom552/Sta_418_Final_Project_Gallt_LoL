@@ -353,8 +353,62 @@ regression with the indicator variable as `barons`,`dragons`, and `team_kpm`.
 
 # Data Analysis
 
+```{r logestic_regression_result)}
 
+glm_fit <- glm(result ~ side + firstdragon + firstbaron +
+                 firsttower + towers + firstmidtower + firsttothreetowers +
+                 inhibitors + vspm + earned_gpm + cspm,
+               data = LCS_matches,
+               family = binomial)
 
+summary(glm_fit)
+
+glm_probs <- data.frame(probs = predict(glm_fit, type = 'response'))
+
+glm_pred = glm_probs %>%
+  mutate(pred = ifelse(probs>.5, 1, 0))
+
+glm_pred = cbind(LCS_matches, glm_pred)
+
+glm_pred %>% 
+  count(pred, result) %>%
+  spread(result, n, fill = 0)
+
+glm_pred %>%
+  summarise(score = mean(pred == result))
+
+```
+``` {r testnsample}
+
+sample_size = floor(0.5*nrow(LCS_matches))
+set.seed(777)
+picked = sample(seq_len(nrow(LCS_matches)),size = sample_size)
+train =LCS_matches[picked,]
+test =LCS_matches[-picked,]
+
+glm_fit = glm(result ~ side + firstdragon + firstbaron +
+                 firsttower + towers + firstmidtower + firsttothreetowers +
+                 inhibitors + vspm + earned_gpm + cspm,
+              data = train, 
+              family = binomial)
+
+glm_probs = data.frame(probs = predict(glm_fit, 
+                                       newdata = test, 
+                                       type="response"))
+
+glm_pred = glm_probs %>%
+  mutate(pred = ifelse(probs>.5, 1, 0))
+
+glm_pred = cbind(test, glm_pred)
+
+glm_pred %>% 
+  count(pred, result) %>%
+  spread(result, n, fill = 0)
+
+glm_pred %>%
+  summarise(score = mean(pred == result),
+            recip = mean(pred != result))
+```
 # Hypotheses
 
 

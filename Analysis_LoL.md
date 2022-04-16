@@ -552,6 +552,122 @@ regression with the indicator variable as `barons`,`dragons`, and
 
 # Data Analysis
 
+``` r
+glm_fit <- glm(result ~ side + firstdragon + firstbaron +
+                 firsttower + towers + firstmidtower + firsttothreetowers +
+                 inhibitors + vspm + earned_gpm + cspm,
+               data = LCS_matches,
+               family = binomial)
+
+summary(glm_fit)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = result ~ side + firstdragon + firstbaron + firsttower + 
+    ##     towers + firstmidtower + firsttothreetowers + inhibitors + 
+    ##     vspm + earned_gpm + cspm, family = binomial, data = LCS_matches)
+    ## 
+    ## Deviance Residuals: 
+    ##      Min        1Q    Median        3Q       Max  
+    ## -2.47880  -0.00193   0.00013   0.02556   1.18233  
+    ## 
+    ## Coefficients:
+    ##                         Estimate Std. Error z value Pr(>|z|)  
+    ## (Intercept)            -55.29025   35.75532  -1.546   0.1220  
+    ## sideRed                  3.18819    3.12257   1.021   0.3072  
+    ## firstdragonTRUE          4.39898    2.67293   1.646   0.0998 .
+    ## firstbaronTRUE          -1.53332    3.34456  -0.458   0.6466  
+    ## firsttowerTRUE          -0.82021    2.24135  -0.366   0.7144  
+    ## towers                   2.44684    1.27031   1.926   0.0541 .
+    ## firstmidtowerTRUE        0.41791    2.80112   0.149   0.8814  
+    ## firsttothreetowersTRUE  -2.76435    3.22932  -0.856   0.3920  
+    ## inhibitors              -1.32343    0.87130  -1.519   0.1288  
+    ## vspm                    -0.08027    1.47115  -0.055   0.9565  
+    ## earned_gpm               0.02628    0.02082   1.262   0.2068  
+    ## cspm                     0.23441    0.34210   0.685   0.4932  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 232.897  on 167  degrees of freedom
+    ## Residual deviance:  16.952  on 156  degrees of freedom
+    ## AIC: 40.952
+    ## 
+    ## Number of Fisher Scoring iterations: 11
+
+``` r
+glm_probs <- data.frame(probs = predict(glm_fit, type = 'response'))
+
+glm_pred = glm_probs %>%
+  mutate(pred = ifelse(probs>.5, 1, 0))
+
+glm_pred = cbind(LCS_matches, glm_pred)
+
+glm_pred %>% 
+  count(pred, result) %>%
+  spread(result, n, fill = 0)
+```
+
+    ##   pred FALSE TRUE
+    ## 1    0    81    1
+    ## 2    1     3   83
+
+``` r
+glm_pred %>%
+  summarise(score = mean(pred == result))
+```
+
+    ##       score
+    ## 1 0.9761905
+
+``` r
+sample_size = floor(0.5*nrow(LCS_matches))
+set.seed(777)
+picked = sample(seq_len(nrow(LCS_matches)),size = sample_size)
+train =LCS_matches[picked,]
+test =LCS_matches[-picked,]
+
+glm_fit = glm(result ~ side + firstdragon + firstbaron +
+                 firsttower + towers + firstmidtower + firsttothreetowers +
+                 inhibitors + vspm + earned_gpm + cspm,
+              data = train, 
+              family = binomial)
+```
+
+    ## Warning: glm.fit: algorithm did not converge
+
+    ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+``` r
+glm_probs = data.frame(probs = predict(glm_fit, 
+                                       newdata = test, 
+                                       type="response"))
+
+glm_pred = glm_probs %>%
+  mutate(pred = ifelse(probs>.5, 1, 0))
+
+glm_pred = cbind(test, glm_pred)
+
+glm_pred %>% 
+  count(pred, result) %>%
+  spread(result, n, fill = 0)
+```
+
+    ##   pred FALSE TRUE
+    ## 1    0    42    3
+    ## 2    1     2   37
+
+``` r
+glm_pred %>%
+  summarise(score = mean(pred == result),
+            recip = mean(pred != result))
+```
+
+    ##       score      recip
+    ## 1 0.9404762 0.05952381
+
 # Hypotheses
 
 # Modeling
